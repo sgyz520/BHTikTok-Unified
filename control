@@ -1,0 +1,18 @@
+Package: com.unified.bhtiktok
+Name: BHTikTok Unified
+Version: 25.9.10
+Architecture: iphoneos-arm
+Description: 功能强大的 TikTok 增强插件，整合版本结合完整功能实现与多语言支持。基于 @hahios-2506 的 BHTiktok 和 @dayanch96 的 BHTikTok-Plus 项目 | A powerful TikTok enhancement tweak with full functionality and multi-language support. Based on BHTiktok by @hahios-2506 and BHTikTok-Plus by @dayanch96
+Homepage: https://github.com/your-username/BHTikTok-Unified
+Maintainer: BHTikTok Unified Team <support@bhtiktok-unified.com>
+Author: BHTikTok Unified Team
+Section: Tweaks
+Depends: mobilesubstrate (>= 0.9.5000), ws.hbang.common (>= 1.17), preferenceloader
+Conflicts: com.bandarhl.bhtiktok, com.bhtiktokplus.tweak
+Replaces: com.bandarhl.bhtiktok, com.bhtiktokplus.tweak
+Provides: bhtiktok-tweak
+Tag: purpose::extension, compatible::ios14, compatible::ios15, compatible::ios16, compatible::ios17, compatible::ios18
+Icon: file:///Library/PreferenceBundles/BHTikTokUnifiedPrefs.bundle/icon@2x.png
+Depiction: https://your-repo.com/depictions/com.unified.bhtiktok/
+SileoDepiction: https://your-repo.com/sileo-depictions/com.unified.bhtiktok/
+ModernDepiction: https://your-repo.com/modern-depictions/com.unified.bhtiktok/
