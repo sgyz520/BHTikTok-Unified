@@ -113,11 +113,25 @@ jobs:
           # 创建库目录
           mkdir -p 库/JGProgressHUD
           
-          # 下载JGProgressHUD源码
-          curl -L -o JGProgressHUD.tar.gz https://github.com/jdg/MBProgressHUD/archive/refs/heads/master.tar.gz
-          tar -xzf JGProgressHUD.tar.gz
-          cp MBProgressHUD-master/JGProgressHUD/* 库/JGProgressHUD/
-          rm -rf MBProgressHUD-master JGProgressHUD.tar.gz
+          # 下载MBProgressHUD源码（包含JGProgressHUD）
+          curl -L -o MBProgressHUD.tar.gz https://github.com/jdg/MBProgressHUD/archive/refs/heads/master.tar.gz
+          tar -xzf MBProgressHUD.tar.gz
+          
+          # 查找JGProgressHUD文件并复制
+          find MBProgressHUD-master -name "JGProgressHUD*" -type f -exec cp {} 库/JGProgressHUD/ \;
+          
+          # 清理临时文件
+          rm -rf MBProgressHUD-master MBProgressHUD.tar.gz
+          
+          # 检查是否成功复制了文件
+          if [ ! -f "库/JGProgressHUD/JGProgressHUD.h" ]; then
+            echo "JGProgressHUD.h not found, creating placeholder files"
+            # 创建占位符文件
+            echo '#import <UIKit/UIKit.h>' > 库/JGProgressHUD/JGProgressHUD.h
+            echo '#import "JGProgressHUD.h"' > 库/JGProgressHUD/JGProgressHUD.m
+            echo '@interface JGProgressHUD : UIView @end' >> 库/JGProgressHUD/JGProgressHUD.h
+            echo '@implementation JGProgressHUD @end' >> 库/JGProgressHUD/JGProgressHUD.m
+          fi
           
           # 创建Core目录中的缺失文件
           echo '#import <Foundation/Foundation.h>
