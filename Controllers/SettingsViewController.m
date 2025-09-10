@@ -313,6 +313,24 @@
     }
 }
 
+- (void)handleSwitchValueChanged:(UISwitch *)sender forKey:(NSString *)key {
+    [[NSUserDefaults standardUserDefaults] setBool:sender.on forKey:key];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+    [self refreshInterface];
+}
+
+- (void)handleSliderValueChanged:(UISlider *)sender forKey:(NSString *)key {
+    [[NSUserDefaults standardUserDefaults] setFloat:sender.value forKey:key];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+    [self refreshInterface];
+}
+
+- (void)handleSegmentedControlValueChanged:(UISegmentedControl *)sender forKey:(NSString *)key {
+    [[NSUserDefaults standardUserDefaults] setInteger:sender.selectedSegmentIndex forKey:key];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+    [self refreshInterface];
+}
+
 #pragma mark - 特殊功能
 
 - (void)showLanguageSelector {
