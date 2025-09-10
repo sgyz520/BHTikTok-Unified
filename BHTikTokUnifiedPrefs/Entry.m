@@ -1,8 +1,10 @@
 #import <Preferences/PSListController.h>
 #import <Preferences/PSSpecifier.h>
+#import <CepheiPrefs/CepheiPrefs.h>
+#import <Cephei/HBPreferences.h>
 #import "../Core/BHIManager.h"
 
-@interface BHTikTokUnifiedPrefsListController : PSListController
+@interface BHTikTokUnifiedPrefsListController : HBListController
 @end
 
 @implementation BHTikTokUnifiedPrefsListController
