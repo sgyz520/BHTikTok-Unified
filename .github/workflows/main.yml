@@ -85,8 +85,10 @@ jobs:
       - name: Download iOS 15.5 SDK
         if: steps.SDK.outputs.cache-hit != 'true'
         run: |
-          svn checkout -q https://github.com/chrisharper22/sdks/trunk/iPhoneOS15.5.sdk
-          mv *.sdk $THEOS/sdks
+          curl -L -o iPhoneOS15.5.sdk.tar.gz https://github.com/chrisharper22/sdks/archive/refs/heads/main.tar.gz
+          tar -xzf iPhoneOS15.5.sdk.tar.gz
+          mv sdks-main/iPhoneOS15.5.sdk $THEOS/sdks/
+          rm -rf sdks-main iPhoneOS15.5.sdk.tar.gz
         env:
           THEOS: ${{ github.workspace }}/theos
 
