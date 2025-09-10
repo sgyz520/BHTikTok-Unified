@@ -83,7 +83,17 @@ static BOOL isAuthenticationShowed = FALSE;
 
 %hook TTKSettingsBaseCellPlugin
 - (void)didSelectItemAtIndex:(NSInteger)index {
-    if ([self.itemModel.identifier isEqualToString:@"bhtiktok_unified_settings"]) {
+    // 使用performSelector安全访问identifier属性
+    SEL identifierSelector = @selector(identifier);
+    NSString *identifier = nil;
+    
+    if ([self.itemModel respondsToSelector:identifierSelector]) {
+        IMP imp = [self.itemModel methodForSelector:identifierSelector];
+        NSString* (*func)(id, SEL) = (void *)imp;
+        identifier = func(self.itemModel, identifierSelector);
+    }
+    
+    if (identifier && [identifier isEqualToString:@"bhtiktok_unified_settings"]) {
         UINavigationController *BHTikTokSettings = [[UINavigationController alloc] 
             initWithRootViewController:[[SettingsViewController alloc] init]];
         [topMostController() presentViewController:BHTikTokSettings animated:true completion:nil];
@@ -213,7 +223,13 @@ static BOOL isAuthenticationShowed = FALSE;
 - (void)bh_downloadButtonTapped:(UIButton *)sender {
     // 下载功能实现
     if ([BHIManager downloadVideos]) {
-        [BHDownload downloadVideoWithModel:self.model];
+        // 检查BHDownload类是否可用
+        Class BHDownloadClass = NSClassFromString(@"BHDownload");
+        if (BHDownloadClass) {
+            [BHDownloadClass performSelector:@selector(downloadVideoWithModel:) withObject:self.model];
+        } else {
+            NSLog(@"[BHTikTok Unified] BHDownload class not found");
+        }
     }
 }
 %end
@@ -462,8 +478,28 @@ static BOOL isAuthenticationShowed = FALSE;
                 actionWithTitle:NSLocalizedStringFromTable(@"CopyVideoLink", @"BHTikTokUnified", @"Copy Video Link")
                           style:UIAlertActionStyleDefault 
                         handler:^(UIAlertAction *action) {
+                // 安全获取uniqueId和awemeId
+                NSString *uniqueId = @"";
+                NSString *awemeId = @"";
+                
+                // 获取uniqueId
+                if (self.model.author && [self.model.author respondsToSelector:@selector(uniqueId)]) {
+                    SEL uniqueIdSelector = @selector(uniqueId);
+                    IMP imp = [self.model.author methodForSelector:uniqueIdSelector];
+                    NSString* (*func)(id, SEL) = (void *)imp;
+                    uniqueId = func(self.model.author, uniqueIdSelector) ?: @"";
+                }
+                
+                // 获取awemeId
+                if (self.model && [self.model respondsToSelector:@selector(awemeId)]) {
+                    SEL awemeIdSelector = @selector(awemeId);
+                    IMP imp = [self.model methodForSelector:awemeIdSelector];
+                    NSString* (*func)(id, SEL) = (void *)imp;
+                    awemeId = func(self.model, awemeIdSelector) ?: @"";
+                }
+                
                 NSString *videoURL = [NSString stringWithFormat:@"https://www.tiktok.com/@%@/video/%@", 
-                                    self.model.author.uniqueId, self.model.awemeId];
+                                    uniqueId, awemeId];
                 [[UIPasteboard generalPasteboard] setString:videoURL];
             }]];
         }
@@ -473,7 +509,25 @@ static BOOL isAuthenticationShowed = FALSE;
                 actionWithTitle:NSLocalizedStringFromTable(@"CopyMusicLink", @"BHTikTokUnified", @"Copy Music Link")
                           style:UIAlertActionStyleDefault 
                         handler:^(UIAlertAction *action) {
-                [[UIPasteboard generalPasteboard] setString:self.model.music.playURL.originURLString ?: @""];
+                // 安全获取音乐URL
+                NSString *musicURL = @"";
+                
+                if (self.model.music && [self.model.music respondsToSelector:@selector(playURL)]) {
+                    SEL playURLSelector = @selector(playURL);
+                    IMP imp = [self.model.music methodForSelector:playURLSelector];
+                    id (*func)(id, SEL) = (void *)imp;
+                    id playURL = func(self.model.music, playURLSelector);
+                    
+                    // 尝试获取originURLString
+                    if (playURL && [playURL respondsToSelector:@selector(originURLString)]) {
+                        SEL originURLStringSelector = @selector(originURLString);
+                        IMP imp2 = [playURL methodForSelector:originURLStringSelector];
+                        NSString* (*func2)(id, SEL) = (void *)imp2;
+                        musicURL = func2(playURL, originURLStringSelector) ?: @"";
+                    }
+                }
+                
+                [[UIPasteboard generalPasteboard] setString:musicURL];
             }]];
         }
         
@@ -490,40 +544,6 @@ static BOOL isAuthenticationShowed = FALSE;
     %orig;
 }
 
-// 地区信息显示
-- (void)configureWithModel:(id)model {
-    %orig;
-    
-    // 添加地区信息视图
-    if ([BHIManager showRegionInfo] || [BHIManager showUploadTime]) {
-        // 检查是否已经添加了地区信息视图
-        BHRegionInfoView *regionInfoView = objc_getAssociatedObject(self, @selector(bh_regionInfoView));
-        
-        if (!regionInfoView) {
-            regionInfoView = [[BHRegionInfoView alloc] initWithFrame:CGRectZero];
-            regionInfoView.translatesAutoresizingMaskIntoConstraints = NO;
-            [self.contentView addSubview:regionInfoView];
-            
-            // 设置约束，将地区信息视图放在描述信息下方，进度条上方
-            [NSLayoutConstraint activateConstraints:@[
-                [regionInfoView.leadingAnchor constraintEqualToAnchor:self.contentView.leadingAnchor constant:12],
-                [regionInfoView.trailingAnchor constraintEqualToAnchor:self.contentView.trailingAnchor constant:-12],
-                [regionInfoView.topAnchor constraintEqualToAnchor:self.descriptionLabel.bottomAnchor constant:8]
-            ]];
-            
-            // 保存关联对象
-            objc_setAssociatedObject(self, @selector(bh_regionInfoView), regionInfoView, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-        }
-        
-        // 配置地区信息视图
-        [regionInfoView configureWithModel:model];
-    }
-}
-
-%new
-- (BHRegionInfoView *)bh_regionInfoView {
-    return objc_getAssociatedObject(self, @selector(bh_regionInfoView));
-}
 %end
 
 // 构造函数
