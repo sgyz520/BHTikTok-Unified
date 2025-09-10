@@ -1,7 +1,7 @@
-#import <Preferences/PSListController.h>
-#import <Preferences/PSSpecifier.h>
 #import <CepheiPrefs/CepheiPrefs.h>
 #import <Cephei/HBPreferences.h>
+#import <Preferences/PSListController.h>
+#import <Preferences/PSSpecifier.h>
 #import "../Core/BHIManager.h"
 
 @interface BHTikTokUnifiedPrefsListController : HBListController
