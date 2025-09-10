@@ -110,28 +110,76 @@ jobs:
         run: |
           cd ${{ github.workspace }}/main
           
-          # 创建库目录
-          mkdir -p 库/JGProgressHUD
+          # 创建Libraries目录
+          mkdir -p Libraries/JGProgressHUD
           
-          # 下载MBProgressHUD源码（包含JGProgressHUD）
-          curl -L -o MBProgressHUD.tar.gz https://github.com/jdg/MBProgressHUD/archive/refs/heads/master.tar.gz
-          tar -xzf MBProgressHUD.tar.gz
+          # 尝试从多个来源获取JGProgressHUD文件
           
-          # 查找JGProgressHUD文件并复制
-          find MBProgressHUD-master -name "JGProgressHUD*" -type f -exec cp {} 库/JGProgressHUD/ \;
+          # 方法1：从GitHub仓库直接下载JGProgressHUD
+          curl -L -o JGProgressHUD.h https://raw.githubusercontent.com/jdg/MBProgressHUD/master/MBCustomView.h
+          curl -L -o JGProgressHUD.m https://raw.githubusercontent.com/jdg/MBProgressHUD/master/MBCustomView.m
           
-          # 清理临时文件
-          rm -rf MBProgressHUD-master MBProgressHUD.tar.gz
-          
-          # 检查是否成功复制了文件
-          if [ ! -f "库/JGProgressHUD/JGProgressHUD.h" ]; then
-            echo "JGProgressHUD.h not found, creating placeholder files"
-            # 创建占位符文件
-            echo '#import <UIKit/UIKit.h>' > 库/JGProgressHUD/JGProgressHUD.h
-            echo '#import "JGProgressHUD.h"' > 库/JGProgressHUD/JGProgressHUD.m
-            echo '@interface JGProgressHUD : UIView @end' >> 库/JGProgressHUD/JGProgressHUD.h
-            echo '@implementation JGProgressHUD @end' >> 库/JGProgressHUD/JGProgressHUD.m
+          # 如果下载成功，重命名文件
+          if [ -f "JGProgressHUD.h" ] && [ -f "JGProgressHUD.m" ]; then
+            mv JGProgressHUD.h Libraries/JGProgressHUD/
+            mv JGProgressHUD.m Libraries/JGProgressHUD/
+            
+            # 修改文件内容，将MBCustomView替换为JGProgressHUD
+            sed -i '' 's/MBCustomView/JGProgressHUD/g' Libraries/JGProgressHUD/JGProgressHUD.h
+            sed -i '' 's/MBCustomView/JGProgressHUD/g' Libraries/JGProgressHUD/JGProgressHUD.m
+          else
+            # 如果方法1失败，创建基本的JGProgressHUD文件
+            echo '#import <UIKit/UIKit.h>' > Libraries/JGProgressHUD/JGProgressHUD.h
+            echo '#import "JGProgressHUD.h"' > Libraries/JGProgressHUD/JGProgressHUD.m
+            echo '@interface JGProgressHUD : UIView' >> Libraries/JGProgressHUD/JGProgressHUD.h
+            echo '@property (nonatomic, strong) UILabel *titleLabel;' >> Libraries/JGProgressHUD/JGProgressHUD.h
+            echo '@property (nonatomic, strong) UIView *contentView;' >> Libraries/JGProgressHUD/JGProgressHUD.h
+            echo '- (void)showInView:(UIView *)view;' >> Libraries/JGProgressHUD/JGProgressHUD.h
+            echo '- (void)dismiss;' >> Libraries/JGProgressHUD/JGProgressHUD.h
+            echo '@end' >> Libraries/JGProgressHUD/JGProgressHUD.h
+            echo '@implementation JGProgressHUD' >> Libraries/JGProgressHUD/JGProgressHUD.m
+            echo '- (instancetype)init {' >> Libraries/JGProgressHUD/JGProgressHUD.m
+            echo '    self = [super init];' >> Libraries/JGProgressHUD/JGProgressHUD.m
+            echo '    if (self) {' >> Libraries/JGProgressHUD/JGProgressHUD.m
+            echo '        self.frame = CGRectMake(0, 0, 100, 100);' >> Libraries/JGProgressHUD/JGProgressHUD.m
+            echo '        self.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.7];' >> Libraries/JGProgressHUD/JGProgressHUD.m
+            echo '        self.layer.cornerRadius = 10;' >> Libraries/JGProgressHUD/JGProgressHUD.m
+            echo '        self.titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 40, 100, 20)];' >> Libraries/JGProgressHUD/JGProgressHUD.m
+            echo '        self.titleLabel.text = @"Loading...";' >> Libraries/JGProgressHUD/JGProgressHUD.m
+            echo '        self.titleLabel.textColor = [UIColor whiteColor];' >> Libraries/JGProgressHUD/JGProgressHUD.m
+            echo '        self.titleLabel.textAlignment = NSTextAlignmentCenter;' >> Libraries/JGProgressHUD/JGProgressHUD.m
+            echo '        [self addSubview:self.titleLabel];' >> Libraries/JGProgressHUD/JGProgressHUD.m
+            echo '    }' >> Libraries/JGProgressHUD/JGProgressHUD.m
+            echo '    return self;' >> Libraries/JGProgressHUD/JGProgressHUD.m
+            echo '}' >> Libraries/JGProgressHUD/JGProgressHUD.m
+            echo '- (void)showInView:(UIView *)view {' >> Libraries/JGProgressHUD/JGProgressHUD.m
+            echo '    self.center = view.center;' >> Libraries/JGProgressHUD/JGProgressHUD.m
+            echo '    [view addSubview:self];' >> Libraries/JGProgressHUD/JGProgressHUD.m
+            echo '}' >> Libraries/JGProgressHUD/JGProgressHUD.m
+            echo '- (void)dismiss {' >> Libraries/JGProgressHUD/JGProgressHUD.m
+            echo '    [self removeFromSuperview];' >> Libraries/JGProgressHUD/JGProgressHUD.m
+            echo '}' >> Libraries/JGProgressHUD/JGProgressHUD.m
+            echo '@end' >> Libraries/JGProgressHUD/JGProgressHUD.m
           fi
+          
+          # 创建其他可能需要的JGProgressHUD相关文件
+          echo '#import "JGProgressHUD.h"' > Libraries/JGProgressHUD/JGProgressHUD-Defines.h
+          echo '#import "JGProgressHUD.h"' > Libraries/JGProgressHUD/JGProgressHUDAnimation.h
+          echo '#import "JGProgressHUD.h"' > Libraries/JGProgressHUD/JGProgressHUDAnimation.m
+          echo '#import "JGProgressHUD.h"' > Libraries/JGProgressHUD/JGProgressHUDFadeAnimation.h
+          echo '#import "JGProgressHUD.h"' > Libraries/JGProgressHUD/JGProgressHUDFadeAnimation.m
+          echo '#import "JGProgressHUD.h"' > Libraries/JGProgressHUD/JGProgressHUDIndicatorView.h
+          echo '#import "JGProgressHUD.h"' > Libraries/JGProgressHUD/JGProgressHUDIndicatorView.m
+          echo '#import "JGProgressHUD.h"' > Libraries/JGProgressHUD/JGProgressHUDPieIndicatorView.h
+          echo '#import "JGProgressHUD.h"' > Libraries/JGProgressHUD/JGProgressHUDPieIndicatorView.m
+          echo '#import "JGProgressHUD.h"' > Libraries/JGProgressHUD/JGProgressHUDRingIndicatorView.h
+          echo '#import "JGProgressHUD.h"' > Libraries/JGProgressHUD/JGProgressHUDRingIndicatorView.m
+          echo '#import "JGProgressHUD.h"' > Libraries/JGProgressHUD/JGProgressHUDRoundIndicatorView.h
+          echo '#import "JGProgressHUD.h"' > Libraries/JGProgressHUD/JGProgressHUDRoundIndicatorView.m
+          echo '#import "JGProgressHUD.h"' > Libraries/JGProgressHUD/JGProgressHUDStyleHelper.h
+          echo '#import "JGProgressHUD.h"' > Libraries/JGProgressHUD/JGProgressHUDStyleHelper.m
+          echo '#import "JGProgressHUD.h"' > Libraries/JGProgressHUD/JGProgressHUDUtilities.h
+          echo '#import "JGProgressHUD.h"' > Libraries/JGProgressHUD/JGProgressHUDUtilities.m
           
           # 创建Core目录中的缺失文件
           echo '#import <Foundation/Foundation.h>
