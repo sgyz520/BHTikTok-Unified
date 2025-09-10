@@ -3,8 +3,8 @@
 #import <objc/runtime.h>
 
 // 通用函数声明
-UIViewController *topMostController(void);
-BOOL is_iPad(void);
+static inline UIViewController *topMostController(void);
+static inline BOOL is_iPad(void);
 
 // TikTok 应用相关类声明
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
