@@ -25,6 +25,7 @@
                                                                       cell:PSStaticTextCell
                                                                       edit:Nil];
         [versionSpec setIdentifier:@"version"];
+        [versionSpec setProperty:@"25.9.10" forKey:@"default"];
         [specifiers addObject:versionSpec];
         
         // 添加作者信息
@@ -36,6 +37,7 @@
                                                                      cell:PSStaticTextCell
                                                                      edit:Nil];
         [authorSpec setIdentifier:@"author"];
+        [authorSpec setProperty:@"BHTikTok Unified Team" forKey:@"default"];
         [specifiers addObject:authorSpec];
         
         // 添加功能设置组
@@ -52,7 +54,7 @@
                                                                          cell:PSSwitchCell
                                                                          edit:Nil];
         [downloadSwitch setIdentifier:@"enableDownload"];
-        [downloadSwitch setDefaultValue:@YES];
+        [downloadSwitch setProperty:@YES forKey:@"default"];
         [specifiers addObject:downloadSwitch];
         
         // 添加地区信息显示开关
@@ -64,7 +66,7 @@
                                                                        cell:PSSwitchCell
                                                                        edit:Nil];
         [regionSwitch setIdentifier:@"showRegionInfo"];
-        [regionSwitch setDefaultValue:@YES];
+        [regionSwitch setProperty:@YES forKey:@"default"];
         [specifiers addObject:regionSwitch];
         
         // 添加上传时间显示开关
@@ -76,7 +78,7 @@
                                                                            cell:PSSwitchCell
                                                                            edit:Nil];
         [uploadTimeSwitch setIdentifier:@"showUploadTime"];
-        [uploadTimeSwitch setDefaultValue:@YES];
+        [uploadTimeSwitch setProperty:@YES forKey:@"default"];
         [specifiers addObject:uploadTimeSwitch];
         
         // 添加复制功能组
@@ -93,7 +95,7 @@
                                                                          cell:PSSwitchCell
                                                                          edit:Nil];
         [copyDescSwitch setIdentifier:@"copyVideoDecription"];
-        [copyDescSwitch setDefaultValue:@YES];
+        [copyDescSwitch setProperty:@YES forKey:@"default"];
         [specifiers addObject:copyDescSwitch];
         
         // 添加复制视频链接开关
@@ -105,7 +107,7 @@
                                                                          cell:PSSwitchCell
                                                                          edit:Nil];
         [copyLinkSwitch setIdentifier:@"copyVideoLink"];
-        [copyLinkSwitch setDefaultValue:@YES];
+        [copyLinkSwitch setProperty:@YES forKey:@"default"];
         [specifiers addObject:copyLinkSwitch];
         
         // 添加复制音乐链接开关
@@ -117,7 +119,7 @@
                                                                           cell:PSSwitchCell
                                                                           edit:Nil];
         [copyMusicSwitch setIdentifier:@"copyMusicLink"];
-        [copyMusicSwitch setDefaultValue:@YES];
+        [copyMusicSwitch setProperty:@YES forKey:@"default"];
         [specifiers addObject:copyMusicSwitch];
         
         // 添加关于组
@@ -134,7 +136,7 @@
                                                                      cell:PSLinkCell
                                                                      edit:Nil];
         [aboutButton setIdentifier:@"about"];
-        [aboutButton setProperty:@selector(showAbout) forKey:@"action"];
+        [aboutButton setButtonAction:@selector(showAbout)];
         [specifiers addObject:aboutButton];
         
         _specifiers = specifiers;
@@ -145,7 +147,7 @@
 
 - (id)readPreferenceValue:(PSSpecifier*)specifier {
     NSString *key = [specifier identifier];
-    id defaultValue = [specifier propertyForKey:@"default"];
+    id defaultValue = [specifier properties][@"default"];
     
     // 从BHIManager获取设置值
     if ([key isEqualToString:@"enableDownload"]) {
