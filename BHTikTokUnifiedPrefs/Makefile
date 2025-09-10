@@ -18,6 +18,7 @@ BHTikTokUnifiedPrefs_FILES += ../Views/BHRegionInfoView.m
 BHTikTokUnifiedPrefs_CFLAGS = -fobjc-arc -Wno-deprecated-declarations -Wno-unused-variable
 BHTikTokUnifiedPrefs_FRAMEWORKS = UIKit Foundation
 BHTikTokUnifiedPrefs_PRIVATE_FRAMEWORKS = Preferences
+BHTikTokUnifiedPrefs_EXTRA_FRAMEWORKS = Cephei CepheiPrefs CepheiUI
 
 # 包信息
 BHTikTokUnifiedPrefs_INSTALL_PATH = /Library/PreferenceBundles
