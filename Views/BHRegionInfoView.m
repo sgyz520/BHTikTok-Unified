@@ -119,7 +119,16 @@
     
     // 如果还是没有，尝试从其他属性获取
     if (!uploadDate && [self.awemeModel respondsToSelector:@selector(createTimeStr)]) {
-        NSString *createTimeStr = [self.awemeModel createTimeStr];
+        NSString *createTimeStr = nil;
+        
+        // 使用performSelector安全调用可能存在的方法
+        SEL selector = @selector(createTimeStr);
+        if ([self.awemeModel respondsToSelector:selector]) {
+            IMP imp = [self.awemeModel methodForSelector:selector];
+            NSString* (*func)(id, SEL) = (void *)imp;
+            createTimeStr = func(self.awemeModel, selector);
+        }
+        
         if (createTimeStr && createTimeStr.length > 0) {
             // 尝试解析字符串格式的日期
             NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
