@@ -3,6 +3,8 @@
 
 @implementation SettingsViewController
 
+@dynamic tableView;
+
 - (instancetype)init {
     self = [super initWithStyle:UITableViewStyleInsetGrouped];
     if (self) {
