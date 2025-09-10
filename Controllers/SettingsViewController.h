@@ -5,6 +5,7 @@
 
 // 界面元素
 @property (nonatomic, strong) UITableView *tableView;
+@dynamic tableView;
 @property (nonatomic, strong) NSArray *sections;
 @property (nonatomic, strong) NSDictionary *settingsData;
 
