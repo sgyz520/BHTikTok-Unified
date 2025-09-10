@@ -11,22 +11,22 @@ on:
       decrypted_tiktok_url:
         description: "The direct URL to the decrypted TikTok ipa"
         default: ""
-        required: true
+        required: false
         type: string
       tiktok_version:
         description: "The version of TikTok"
         default: ""
-        required: true
+        required: false
         type: string
       bundle_id:
         description: "Modify the bundle ID. Not recommended"
         default: "com.zhiliaoapp.musically"
-        required: true
+        required: false
         type: string
       app_name:
         description: "Modify the name of the app on the Home Screen. Not recommended"
         default: "TikTok"
-        required: true
+        required: false
         type: string
       create_release:
         description: "Create a draft release"
@@ -104,15 +104,6 @@ jobs:
         env:
           THEOS: ${{ github.workspace }}/theos
 
-      - name: Download TikTok iPA (if URL provided)
-        if: ${{ inputs.decrypted_tiktok_url != '' }}
-        run: |
-          wget "$TIKTOK_URL" --no-verbose -O main/TikTok.ipa && echo -e "==> \033[1mTikTok v${{ inputs.tiktok_version }} downloaded! \033[0m"
-        env:
-          THEOS: ${{ github.workspace }}/theos
-          TIKTOK_VERSION: ${{ inputs.tiktok_version }}
-          TIKTOK_URL: ${{ inputs.decrypted_tiktok_url }}
-
       - name: Build Tweak Package
         id: build_package
         run: |
@@ -135,39 +126,12 @@ jobs:
           THEOS: ${{ github.workspace }}/theos
           BHTIKTOK_VERSION: ${{ inputs.bhtiktok_version || '25.9.10' }}
 
-      - name: Build IPA (if TikTok IPA provided)
-        id: build_ipa
-        if: ${{ inputs.decrypted_tiktok_url != '' }}
-        run: |
-          cd ${{ github.workspace }}/main
-          
-          # 配置IPA构建
-          sed -i '' "s/BUNDLE_ID = .*/BUNDLE_ID = ${{ env.BUNDLE_ID }}/g" Makefile
-          sed -i '' "s/DISPLAY_NAME = .*/DISPLAY_NAME = ${{ env.APP_NAME }}/g" Makefile
-          
-          # 构建IPA
-          make package IPA=TikTok.ipa FINALPACKAGE=1
-          
-          # 重命名IPA文件
-          IPA_NAME="BHTikTokUnified_${{ env.TIKTOK_VERSION }}_${{ env.BHTIKTOK_VERSION }}.ipa"
-          mv "packages/$(ls -t packages/*.ipa | head -n1)" "packages/$IPA_NAME"
-          
-          echo "ipa=$IPA_NAME" >>$GITHUB_OUTPUT
-          echo -e "==> \033[1mIPA: $IPA_NAME\033[0m"
-        env:
-          THEOS: ${{ github.workspace }}/theos
-          BHTIKTOK_VERSION: ${{ inputs.bhtiktok_version || '25.9.10' }}
-          TIKTOK_VERSION: ${{ inputs.tiktok_version }}
-          BUNDLE_ID: ${{ inputs.bundle_id }}
-          APP_NAME: ${{ inputs.app_name }}
-
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
           name: BHTikTokUnified_${{ inputs.bhtiktok_version || '25.9.10' }}
           path: |
             ${{ github.workspace }}/main/packages/*.deb
-            ${{ github.workspace }}/main/packages/*.ipa
           if-no-files-found: error
 
       - name: Create Release
@@ -177,14 +141,13 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ inputs.tiktok_version && format('v{0}-{1}-({2})', inputs.tiktok_version, inputs.bhtiktok_version, github.run_number) || format('v{0}-({1})', inputs.bhtiktok_version || '25.9.10', github.run_number) }}
-          name: ${{ inputs.tiktok_version && format('BHTikTok Unified v{0} for TikTok v{1}', inputs.bhtiktok_version, inputs.tiktok_version) || format('BHTikTok Unified v{0}', inputs.bhtiktok_version || '25.9.10') }}
+          tag_name: ${{ format('v{0}-({1})', inputs.bhtiktok_version || '25.9.10', github.run_number) }}
+          name: ${{ format('BHTikTok Unified v{0}', inputs.bhtiktok_version || '25.9.10') }}
           body: |
             ## 🎉 BHTikTok Unified Release
             
             ### 📱 版本信息 | Version Info
             - **BHTikTok Unified**: v${{ inputs.bhtiktok_version || '25.9.10' }}
-            ${{ inputs.tiktok_version && format('- **TikTok**: v{0}', inputs.tiktok_version) || '' }}
             - **构建号 | Build**: #${{ github.run_number }}
             - **提交 | Commit**: ${{ github.sha }}
             
@@ -197,12 +160,10 @@ jobs:
             
             ### 📦 下载 | Downloads
             - **DEB包**: 适用于越狱设备
-            ${{ inputs.decrypted_tiktok_url && '- **IPA文件**: 适用于侧载安装' || '' }}
             
             ### ⚠️ 注意事项 | Notes
             - 需要iOS 14.0或更高版本
             - DEB包需要越狱环境
-            - IPA文件需要开发者证书或侧载工具
             
             ### 🔗 相关链接 | Links
             - [使用说明](https://github.com/${{ github.repository }}/blob/main/README.md)
@@ -210,7 +171,6 @@ jobs:
             - [Telegram频道](https://t.me/BHTikTokUnified)
           files: |
             main/packages/*.deb
-            main/packages/*.ipa
           draft: ${{ inputs.create_release == true }}
           prerelease: ${{ contains(github.ref, 'beta') || contains(github.ref, 'alpha') }}
 
