@@ -15,18 +15,18 @@ BHTikTokUnified_FILES += Controllers/SecurityViewController.m
 BHTikTokUnified_FILES += Views/BHRegionInfoView.m
 
 # 第三方库文件
-BHTikTokUnified_FILES += Libraries/JGProgressHUD/JGProgressHUD.m
-BHTikTokUnified_FILES += Libraries/JGProgressHUD/JGProgressHUDAnimation.m
-BHTikTokUnified_FILES += Libraries/JGProgressHUD/JGProgressHUDErrorIndicatorView.m
-BHTikTokUnified_FILES += Libraries/JGProgressHUD/JGProgressHUDFadeAnimation.m
-BHTikTokUnified_FILES += Libraries/JGProgressHUD/JGProgressHUDFadeZoomAnimation.m
-BHTikTokUnified_FILES += Libraries/JGProgressHUD/JGProgressHUDImageIndicatorView.m
-BHTikTokUnified_FILES += Libraries/JGProgressHUD/JGProgressHUDIndeterminateIndicatorView.m
-BHTikTokUnified_FILES += Libraries/JGProgressHUD/JGProgressHUDIndicatorView.m
-BHTikTokUnified_FILES += Libraries/JGProgressHUD/JGProgressHUDPieIndicatorView.m
-BHTikTokUnified_FILES += Libraries/JGProgressHUD/JGProgressHUDRingIndicatorView.m
-BHTikTokUnified_FILES += Libraries/JGProgressHUD/JGProgressHUDShadow.m
-BHTikTokUnified_FILES += Libraries/JGProgressHUD/JGProgressHUDSuccessIndicatorView.m
+BHTikTokUnified_FILES += 库/JGProgressHUD/JGProgressHUD.m
+BHTikTokUnified_FILES += 库/JGProgressHUD/JGProgressHUDAnimation.m
+BHTikTokUnified_FILES += 库/JGProgressHUD/JGProgressHUDErrorIndicatorView.m
+BHTikTokUnified_FILES += 库/JGProgressHUD/JGProgressHUDFadeAnimation.m
+BHTikTokUnified_FILES += 库/JGProgressHUD/JGProgressHUDFadeZoomAnimation.m
+BHTikTokUnified_FILES += 库/JGProgressHUD/JGProgressHUDImageIndicatorView.m
+BHTikTokUnified_FILES += 库/JGProgressHUD/JGProgressHUDIndeterminateIndicatorView.m
+BHTikTokUnified_FILES += 库/JGProgressHUD/JGProgressHUDIndicatorView.m
+BHTikTokUnified_FILES += 库/JGProgressHUD/JGProgressHUDPieIndicatorView.m
+BHTikTokUnified_FILES += 库/JGProgressHUD/JGProgressHUDRingIndicatorView.m
+BHTikTokUnified_FILES += 库/JGProgressHUD/JGProgressHUDShadow.m
+BHTikTokUnified_FILES += 库/JGProgressHUD/JGProgressHUDSuccessIndicatorView.m
 
 # 编译选项
 BHTikTokUnified_CFLAGS = -fobjc-arc -Wno-deprecated-declarations -Wno-unused-variable
