@@ -186,7 +186,7 @@
     
     // 尝试从region字段获取
     if ([model respondsToSelector:@selector(region)]) {
-        NSString *region = [model region];
+        NSString *region = (NSString *)[model performSelector:@selector(region)];
         if (region && region.length > 0) {
             NSString *regionName = [self getRegionDisplayName:region];
             
