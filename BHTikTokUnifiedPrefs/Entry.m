@@ -13,7 +13,7 @@
         
         // 添加标题组
         PSSpecifier *titleGroup = [PSSpecifier groupSpecifierWithName:@"BHTikTok Unified"];
-        titleGroup.name = @"BHTikTok Unified";
+        [titleGroup setName:@"BHTikTok Unified"];
         [specifiers addObject:titleGroup];
         
         // 添加版本信息
@@ -24,7 +24,7 @@
                                                                     detail:Nil
                                                                       cell:PSStaticTextCell
                                                                       edit:Nil];
-        versionSpec.identifier = @"version";
+        [versionSpec setIdentifier:@"version"];
         [specifiers addObject:versionSpec];
         
         // 添加作者信息
@@ -35,12 +35,12 @@
                                                                    detail:Nil
                                                                      cell:PSStaticTextCell
                                                                      edit:Nil];
-        authorSpec.identifier = @"author";
+        [authorSpec setIdentifier:@"author"];
         [specifiers addObject:authorSpec];
         
         // 添加功能设置组
         PSSpecifier *settingsGroup = [PSSpecifier groupSpecifierWithName:@"功能设置"];
-        settingsGroup.name = @"功能设置";
+        [settingsGroup setName:@"功能设置"];
         [specifiers addObject:settingsGroup];
         
         // 添加下载功能开关
@@ -51,8 +51,8 @@
                                                                        detail:Nil
                                                                          cell:PSSwitchCell
                                                                          edit:Nil];
-        downloadSwitch.identifier = @"enableDownload";
-        downloadSwitch.default = @YES;
+        [downloadSwitch setIdentifier:@"enableDownload"];
+        [downloadSwitch setDefaultValue:@YES];
         [specifiers addObject:downloadSwitch];
         
         // 添加地区信息显示开关
@@ -63,8 +63,8 @@
                                                                      detail:Nil
                                                                        cell:PSSwitchCell
                                                                        edit:Nil];
-        regionSwitch.identifier = @"showRegionInfo";
-        regionSwitch.default = @YES;
+        [regionSwitch setIdentifier:@"showRegionInfo"];
+        [regionSwitch setDefaultValue:@YES];
         [specifiers addObject:regionSwitch];
         
         // 添加上传时间显示开关
@@ -75,13 +75,13 @@
                                                                          detail:Nil
                                                                            cell:PSSwitchCell
                                                                            edit:Nil];
-        uploadTimeSwitch.identifier = @"showUploadTime";
-        uploadTimeSwitch.default = @YES;
+        [uploadTimeSwitch setIdentifier:@"showUploadTime"];
+        [uploadTimeSwitch setDefaultValue:@YES];
         [specifiers addObject:uploadTimeSwitch];
         
         // 添加复制功能组
         PSSpecifier *copyGroup = [PSSpecifier groupSpecifierWithName:@"复制功能"];
-        copyGroup.name = @"复制功能";
+        [copyGroup setName:@"复制功能"];
         [specifiers addObject:copyGroup];
         
         // 添加复制视频描述开关
@@ -92,8 +92,8 @@
                                                                        detail:Nil
                                                                          cell:PSSwitchCell
                                                                          edit:Nil];
-        copyDescSwitch.identifier = @"copyVideoDecription";
-        copyDescSwitch.default = @YES;
+        [copyDescSwitch setIdentifier:@"copyVideoDecription"];
+        [copyDescSwitch setDefaultValue:@YES];
         [specifiers addObject:copyDescSwitch];
         
         // 添加复制视频链接开关
@@ -104,8 +104,8 @@
                                                                        detail:Nil
                                                                          cell:PSSwitchCell
                                                                          edit:Nil];
-        copyLinkSwitch.identifier = @"copyVideoLink";
-        copyLinkSwitch.default = @YES;
+        [copyLinkSwitch setIdentifier:@"copyVideoLink"];
+        [copyLinkSwitch setDefaultValue:@YES];
         [specifiers addObject:copyLinkSwitch];
         
         // 添加复制音乐链接开关
@@ -116,13 +116,13 @@
                                                                         detail:Nil
                                                                           cell:PSSwitchCell
                                                                           edit:Nil];
-        copyMusicSwitch.identifier = @"copyMusicLink";
-        copyMusicSwitch.default = @YES;
+        [copyMusicSwitch setIdentifier:@"copyMusicLink"];
+        [copyMusicSwitch setDefaultValue:@YES];
         [specifiers addObject:copyMusicSwitch];
         
         // 添加关于组
         PSSpecifier *aboutGroup = [PSSpecifier groupSpecifierWithName:@"关于"];
-        aboutGroup.name = @"关于";
+        [aboutGroup setName:@"关于"];
         [specifiers addObject:aboutGroup];
         
         // 添加关于按钮
@@ -133,8 +133,8 @@
                                                                    detail:Nil
                                                                      cell:PSLinkCell
                                                                      edit:Nil];
-        aboutButton.identifier = @"about";
-        aboutButton.action = @selector(showAbout);
+        [aboutButton setIdentifier:@"about"];
+        [aboutButton setProperty:@selector(showAbout) forKey:@"action"];
         [specifiers addObject:aboutButton];
         
         _specifiers = specifiers;
@@ -145,11 +145,11 @@
 
 - (id)readPreferenceValue:(PSSpecifier*)specifier {
     NSString *key = [specifier identifier];
-    id defaultValue = [specifier default];
+    id defaultValue = [specifier propertyForKey:@"default"];
     
     // 从BHIManager获取设置值
     if ([key isEqualToString:@"enableDownload"]) {
-        return @([BHIManager enableDownload]);
+        return @([BHIManager downloadVideos]);
     } else if ([key isEqualToString:@"showRegionInfo"]) {
         return @([BHIManager showRegionInfo]);
     } else if ([key isEqualToString:@"showUploadTime"]) {
@@ -172,25 +172,13 @@
 - (void)setPreferenceValue:(id)value forSpecifier:(PSSpecifier*)specifier {
     NSString *key = [specifier identifier];
     
-    // 保存设置值到BHIManager
-    if ([key isEqualToString:@"enableDownload"]) {
-        [BHIManager setEnableDownload:[value boolValue]];
-    } else if ([key isEqualToString:@"showRegionInfo"]) {
-        [BHIManager setShowRegionInfo:[value boolValue]];
-    } else if ([key isEqualToString:@"showUploadTime"]) {
-        [BHIManager setShowUploadTime:[value boolValue]];
-    } else if ([key isEqualToString:@"copyVideoDecription"]) {
-        [BHIManager setCopyVideoDecription:[value boolValue]];
-    } else if ([key isEqualToString:@"copyVideoLink"]) {
-        [BHIManager setCopyVideoLink:[value boolValue]];
-    } else if ([key isEqualToString:@"copyMusicLink"]) {
-        [BHIManager setCopyMusicLink:[value boolValue]];
-    }
-    
-    // 保存到NSUserDefaults
+    // 保存设置值到NSUserDefaults
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     [defaults setObject:value forKey:key];
     [defaults synchronize];
+    
+    // 注意：BHIManager类中没有对应的setter方法，所以这里只保存到NSUserDefaults
+    // 实际的功能实现应该在BHIManager内部读取这些NSUserDefaults值
 }
 
 - (void)showAbout {
