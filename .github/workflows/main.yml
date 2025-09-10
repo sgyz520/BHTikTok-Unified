@@ -106,6 +106,273 @@ jobs:
         env:
           THEOS: ${{ github.workspace }}/theos
 
+      - name: Create Missing Directories and Files
+        run: |
+          cd ${{ github.workspace }}/main
+          
+          # 创建库目录
+          mkdir -p 库/JGProgressHUD
+          
+          # 下载JGProgressHUD源码
+          curl -L -o JGProgressHUD.tar.gz https://github.com/jdg/MBProgressHUD/archive/refs/heads/master.tar.gz
+          tar -xzf JGProgressHUD.tar.gz
+          cp MBProgressHUD-master/JGProgressHUD/* 库/JGProgressHUD/
+          rm -rf MBProgressHUD-master JGProgressHUD.tar.gz
+          
+          # 创建Core目录中的缺失文件
+          cat > Core/BHDownload.h << 'EOF'
+#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
+
+NS_ASSUME_NONNULL_BEGIN
+
+@protocol BHDownloadDelegate <NSObject>
+@optional
+- (void)downloadDidFinish:(NSString *)filePath;
+- (void)downloadDidFailWithError:(NSError *)error;
+- (void)downloadProgress:(float)progress;
+@end
+
+@interface BHDownload : NSObject <NSURLSessionDownloadDelegate>
+
+@property (nonatomic, weak) id<BHDownloadDelegate> delegate;
+@property (nonatomic, strong) NSURLSession *session;
+@property (nonatomic, strong) NSURLSessionDownloadTask *downloadTask;
+
++ (instancetype)sharedManager;
+- (void)downloadFileWithURL:(NSString *)urlString;
+- (void)cancelDownload;
+
+@end
+
+NS_ASSUME_NONNULL_END
+EOF
+          
+          cat > Core/BHDownload.m << 'EOF'
+#import "BHDownload.h"
+
+@interface BHDownload ()
+
+@property (nonatomic, strong) NSData *resumeData;
+
+@end
+
+@implementation BHDownload
+
++ (instancetype)sharedManager {
+    static BHDownload *sharedManager = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        sharedManager = [[BHDownload alloc] init];
+    });
+    return sharedManager;
+}
+
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+        self.session = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
+    }
+    return self;
+}
+
+- (void)downloadFileWithURL:(NSString *)urlString {
+    NSURL *url = [NSURL URLWithString:urlString];
+    if (!url) {
+        NSError *error = [NSError errorWithDomain:@"BHDownloadError" code:1001 userInfo:@{NSLocalizedDescriptionKey: @"Invalid URL"}];
+        [self.delegate downloadDidFailWithError:error];
+        return;
+    }
+    
+    self.downloadTask = [self.session downloadTaskWithURL:url];
+    [self.downloadTask resume];
+}
+
+- (void)cancelDownload {
+    [self.downloadTask cancelByProducingResumeData:^(NSData * _Nullable resumeData) {
+        self.resumeData = resumeData;
+    }];
+}
+
+#pragma mark - NSURLSessionDownloadDelegate
+
+- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location {
+    NSString *fileName = [downloadTask.originalRequest.URL lastPathComponent];
+    NSURL *documentsURL = [[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask][0];
+    NSURL *destinationURL = [documentsURL URLByAppendingPathComponent:fileName];
+    
+    NSError *error = nil;
+    [[NSFileManager defaultManager] moveItemAtURL:location toURL:destinationURL error:&error];
+    
+    if (error) {
+        [self.delegate downloadDidFailWithError:error];
+    } else {
+        [self.delegate downloadDidFinish:destinationURL.path];
+    }
+}
+
+- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didWriteData:(int64_t)bytesWritten totalBytesWritten:(int64_t)totalBytesWritten totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite {
+    float progress = (float)totalBytesWritten / (float)totalBytesExpectedToWrite;
+    [self.delegate downloadProgress:progress];
+}
+
+- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error {
+    if (error) {
+        [self.delegate downloadDidFailWithError:error];
+    }
+}
+
+@end
+EOF
+          
+          cat > Core/BHMultipleDownload.h << 'EOF'
+#import <Foundation/Foundation.h>
+
+NS_ASSUME_NONNULL_BEGIN
+
+@protocol BHMultipleDownloadDelegate <NSObject>
+@optional
+- (void)multipleDownloadDidFinish:(NSArray *)filePaths;
+- (void)multipleDownloadDidFailWithError:(NSError *)error;
+- (void)multipleDownloadProgress:(float)totalProgress individualProgress:(NSDictionary *)individualProgress;
+@end
+
+@interface BHMultipleDownload : NSObject <NSURLSessionDownloadDelegate>
+
+@property (nonatomic, weak) id<BHMultipleDownloadDelegate> delegate;
+@property (nonatomic, strong) NSURLSession *session;
+@property (nonatomic, strong) NSMutableDictionary *downloadTasks;
+@property (nonatomic, strong) NSMutableDictionary *progress;
+@property (nonatomic, assign) NSUInteger completedTasks;
+@property (nonatomic, assign) NSUInteger totalTasks;
+
++ (instancetype)sharedManager;
+- (void)downloadFiles:(NSArray *)urlStrings;
+- (void)cancelAllDownloads;
+
+@end
+
+NS_ASSUME_NONNULL_END
+EOF
+          
+          cat > Core/BHMultipleDownload.m << 'EOF'
+#import "BHMultipleDownload.h"
+
+@interface BHMultipleDownload ()
+
+@property (nonatomic, strong) NSMutableDictionary *resumeData;
+
+@end
+
+@implementation BHMultipleDownload
+
++ (instancetype)sharedManager {
+    static BHMultipleDownload *sharedManager = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        sharedManager = [[BHMultipleDownload alloc] init];
+    });
+    return sharedManager;
+}
+
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+        self.session = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
+        self.downloadTasks = [NSMutableDictionary dictionary];
+        self.progress = [NSMutableDictionary dictionary];
+        self.completedTasks = 0;
+        self.totalTasks = 0;
+    }
+    return self;
+}
+
+- (void)downloadFiles:(NSArray *)urlStrings {
+    [self cancelAllDownloads];
+    
+    self.totalTasks = urlStrings.count;
+    self.completedTasks = 0;
+    [self.progress removeAllObjects];
+    
+    for (NSString *urlString in urlStrings) {
+        NSURL *url = [NSURL URLWithString:urlString];
+        if (url) {
+            NSURLSessionDownloadTask *downloadTask = [self.session downloadTaskWithURL:url];
+            NSString *taskIdentifier = [NSString stringWithFormat:@"%lu", (unsigned long)downloadTask.taskIdentifier];
+            self.downloadTasks[taskIdentifier] = downloadTask;
+            self.progress[taskIdentifier] = @(0.0);
+            [downloadTask resume];
+        }
+    }
+}
+
+- (void)cancelAllDownloads {
+    for (NSURLSessionDownloadTask *task in [self.downloadTasks allValues]) {
+        [task cancel];
+    }
+    [self.downloadTasks removeAllObjects];
+    [self.progress removeAllObjects];
+    self.completedTasks = 0;
+    self.totalTasks = 0;
+}
+
+#pragma mark - NSURLSessionDownloadDelegate
+
+- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location {
+    NSString *taskIdentifier = [NSString stringWithFormat:@"%lu", (unsigned long)downloadTask.taskIdentifier];
+    NSString *fileName = [downloadTask.originalRequest.URL lastPathComponent];
+    NSURL *documentsURL = [[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask][0];
+    NSURL *destinationURL = [documentsURL URLByAppendingPathComponent:fileName];
+    
+    NSError *error = nil;
+    [[NSFileManager defaultManager] moveItemAtURL:location toURL:destinationURL error:&error];
+    
+    if (error) {
+        [self.delegate multipleDownloadDidFailWithError:error];
+    } else {
+        self.completedTasks++;
+        [self.progress removeObjectForKey:taskIdentifier];
+        [self.downloadTasks removeObjectForKey:taskIdentifier];
+        
+        if (self.completedTasks == self.totalTasks) {
+            NSMutableArray *filePaths = [NSMutableArray array];
+            for (NSString *urlString in [self.downloadTasks allKeys]) {
+                NSURL *url = [NSURL URLWithString:urlString];
+                NSString *fileName = [url lastPathComponent];
+                NSURL *documentsURL = [[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask][0];
+                NSURL *fileURL = [documentsURL URLByAppendingPathComponent:fileName];
+                [filePaths addObject:fileURL.path];
+            }
+            [self.delegate multipleDownloadDidFinish:filePaths];
+        }
+    }
+}
+
+- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didWriteData:(int64_t)bytesWritten totalBytesWritten:(int64_t)totalBytesWritten totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite {
+    NSString *taskIdentifier = [NSString stringWithFormat:@"%lu", (unsigned long)downloadTask.taskIdentifier];
+    float progress = (float)totalBytesWritten / (float)totalBytesExpectedToWrite;
+    self.progress[taskIdentifier] = @(progress);
+    
+    float totalProgress = 0.0;
+    for (NSNumber *p in [self.progress allValues]) {
+        totalProgress += [p floatValue];
+    }
+    totalProgress = totalProgress / self.totalTasks;
+    
+    [self.delegate multipleDownloadProgress:totalProgress individualProgress:[self.progress copy]];
+}
+
+- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error {
+    if (error) {
+        [self.delegate multipleDownloadDidFailWithError:error];
+    }
+}
+
+@end
+EOF
+
       - name: Build Tweak Package
         id: build_package
         run: |
