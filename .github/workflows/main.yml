@@ -62,7 +62,7 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          brew install ldid dpkg make
+          brew install ldid dpkg make subversion
           echo "$(brew --prefix make)/libexec/gnubin" >> $GITHUB_PATH
 
       - name: Setup Theos
@@ -75,17 +75,17 @@ jobs:
 
       - name: Cache iOS SDK
         id: SDK
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         env:
-          cache-name: iOS-16.5-SDK
+          cache-name: iOS-15.5-SDK
         with:
           path: theos/sdks/
           key: ${{ env.cache-name }}
 
-      - name: Download iOS 16.5 SDK
+      - name: Download iOS 15.5 SDK
         if: steps.SDK.outputs.cache-hit != 'true'
         run: |
-          svn checkout -q https://github.com/chrisharper22/sdks/tree/main/iPhoneOS15.5.sdk
+          svn checkout -q https://github.com/chrisharper22/sdks/trunk/iPhoneOS15.5.sdk
           mv *.sdk $THEOS/sdks
         env:
           THEOS: ${{ github.workspace }}/theos
