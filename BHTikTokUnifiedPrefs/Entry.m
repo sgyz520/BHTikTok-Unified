@@ -1,7 +1,5 @@
 #import <CepheiPrefs/CepheiPrefs.h>
 #import <Cephei/HBPreferences.h>
-#import <Preferences/PSListController.h>
-#import <Preferences/PSSpecifier.h>
 #import "../Core/BHIManager.h"
 
 @interface BHTikTokUnifiedPrefsListController : HBListController
@@ -14,129 +12,102 @@
         NSMutableArray *specifiers = [NSMutableArray array];
         
         // 添加标题组
-        PSSpecifier *titleGroup = [PSSpecifier groupSpecifierWithName:@"BHTikTok Unified"];
+        HBPreferenceSpecifier *titleGroup = [[HBPreferenceSpecifier alloc] init];
         [titleGroup setName:@"BHTikTok Unified"];
         [specifiers addObject:titleGroup];
         
         // 添加版本信息
-        PSSpecifier *versionSpec = [PSSpecifier preferenceSpecifierNamed:@"Version"
-                                                                    target:self
-                                                                       set:NULL
-                                                                       get:NULL
-                                                                    detail:Nil
-                                                                      cell:PSStaticTextCell
-                                                                      edit:Nil];
+        HBPreferenceSpecifier *versionSpec = [[HBPreferenceSpecifier alloc] init];
+        [versionSpec setName:@"Version"];
         [versionSpec setIdentifier:@"version"];
         [versionSpec setProperty:@"25.9.10" forKey:@"default"];
         [specifiers addObject:versionSpec];
         
         // 添加作者信息
-        PSSpecifier *authorSpec = [PSSpecifier preferenceSpecifierNamed:@"Author"
-                                                                   target:self
-                                                                      set:NULL
-                                                                      get:NULL
-                                                                   detail:Nil
-                                                                     cell:PSStaticTextCell
-                                                                     edit:Nil];
+        HBPreferenceSpecifier *authorSpec = [[HBPreferenceSpecifier alloc] init];
+        [authorSpec setName:@"Author"];
         [authorSpec setIdentifier:@"author"];
         [authorSpec setProperty:@"BHTikTok Unified Team" forKey:@"default"];
         [specifiers addObject:authorSpec];
         
         // 添加功能设置组
-        PSSpecifier *settingsGroup = [PSSpecifier groupSpecifierWithName:@"功能设置"];
+        HBPreferenceSpecifier *settingsGroup = [[HBPreferenceSpecifier alloc] init];
         [settingsGroup setName:@"功能设置"];
         [specifiers addObject:settingsGroup];
         
         // 添加下载功能开关
-        PSSpecifier *downloadSwitch = [PSSpecifier preferenceSpecifierNamed:@"启用下载功能"
-                                                                       target:self
-                                                                          set:@selector(setPreferenceValue:forSpecifier:)
-                                                                          get:@selector(readPreferenceValue:)
-                                                                       detail:Nil
-                                                                         cell:PSSwitchCell
-                                                                         edit:Nil];
+        HBPreferenceSpecifier *downloadSwitch = [[HBPreferenceSpecifier alloc] init];
+        [downloadSwitch setName:@"启用下载功能"];
         [downloadSwitch setIdentifier:@"enableDownload"];
         [downloadSwitch setProperty:@YES forKey:@"default"];
+        [downloadSwitch setTarget:self];
+        [downloadSwitch setSetAction:@selector(setPreferenceValue:forSpecifier:)];
+        [downloadSwitch setGetAction:@selector(readPreferenceValue:)];
         [specifiers addObject:downloadSwitch];
         
         // 添加地区信息显示开关
-        PSSpecifier *regionSwitch = [PSSpecifier preferenceSpecifierNamed:@"显示地区信息"
-                                                                     target:self
-                                                                        set:@selector(setPreferenceValue:forSpecifier:)
-                                                                        get:@selector(readPreferenceValue:)
-                                                                     detail:Nil
-                                                                       cell:PSSwitchCell
-                                                                       edit:Nil];
+        HBPreferenceSpecifier *regionSwitch = [[HBPreferenceSpecifier alloc] init];
+        [regionSwitch setName:@"显示地区信息"];
         [regionSwitch setIdentifier:@"showRegionInfo"];
         [regionSwitch setProperty:@YES forKey:@"default"];
+        [regionSwitch setTarget:self];
+        [regionSwitch setSetAction:@selector(setPreferenceValue:forSpecifier:)];
+        [regionSwitch setGetAction:@selector(readPreferenceValue:)];
         [specifiers addObject:regionSwitch];
         
         // 添加上传时间显示开关
-        PSSpecifier *uploadTimeSwitch = [PSSpecifier preferenceSpecifierNamed:@"显示上传时间"
-                                                                         target:self
-                                                                            set:@selector(setPreferenceValue:forSpecifier:)
-                                                                            get:@selector(readPreferenceValue:)
-                                                                         detail:Nil
-                                                                           cell:PSSwitchCell
-                                                                           edit:Nil];
+        HBPreferenceSpecifier *uploadTimeSwitch = [[HBPreferenceSpecifier alloc] init];
+        [uploadTimeSwitch setName:@"显示上传时间"];
         [uploadTimeSwitch setIdentifier:@"showUploadTime"];
         [uploadTimeSwitch setProperty:@YES forKey:@"default"];
+        [uploadTimeSwitch setTarget:self];
+        [uploadTimeSwitch setSetAction:@selector(setPreferenceValue:forSpecifier:)];
+        [uploadTimeSwitch setGetAction:@selector(readPreferenceValue:)];
         [specifiers addObject:uploadTimeSwitch];
         
         // 添加复制功能组
-        PSSpecifier *copyGroup = [PSSpecifier groupSpecifierWithName:@"复制功能"];
+        HBPreferenceSpecifier *copyGroup = [[HBPreferenceSpecifier alloc] init];
         [copyGroup setName:@"复制功能"];
         [specifiers addObject:copyGroup];
         
         // 添加复制视频描述开关
-        PSSpecifier *copyDescSwitch = [PSSpecifier preferenceSpecifierNamed:@"复制视频描述"
-                                                                       target:self
-                                                                          set:@selector(setPreferenceValue:forSpecifier:)
-                                                                          get:@selector(readPreferenceValue:)
-                                                                       detail:Nil
-                                                                         cell:PSSwitchCell
-                                                                         edit:Nil];
+        HBPreferenceSpecifier *copyDescSwitch = [[HBPreferenceSpecifier alloc] init];
+        [copyDescSwitch setName:@"复制视频描述"];
         [copyDescSwitch setIdentifier:@"copyVideoDecription"];
         [copyDescSwitch setProperty:@YES forKey:@"default"];
+        [copyDescSwitch setTarget:self];
+        [copyDescSwitch setSetAction:@selector(setPreferenceValue:forSpecifier:)];
+        [copyDescSwitch setGetAction:@selector(readPreferenceValue:)];
         [specifiers addObject:copyDescSwitch];
         
         // 添加复制视频链接开关
-        PSSpecifier *copyLinkSwitch = [PSSpecifier preferenceSpecifierNamed:@"复制视频链接"
-                                                                       target:self
-                                                                          set:@selector(setPreferenceValue:forSpecifier:)
-                                                                          get:@selector(readPreferenceValue:)
-                                                                       detail:Nil
-                                                                         cell:PSSwitchCell
-                                                                         edit:Nil];
+        HBPreferenceSpecifier *copyLinkSwitch = [[HBPreferenceSpecifier alloc] init];
+        [copyLinkSwitch setName:@"复制视频链接"];
         [copyLinkSwitch setIdentifier:@"copyVideoLink"];
         [copyLinkSwitch setProperty:@YES forKey:@"default"];
+        [copyLinkSwitch setTarget:self];
+        [copyLinkSwitch setSetAction:@selector(setPreferenceValue:forSpecifier:)];
+        [copyLinkSwitch setGetAction:@selector(readPreferenceValue:)];
         [specifiers addObject:copyLinkSwitch];
         
         // 添加复制音乐链接开关
-        PSSpecifier *copyMusicSwitch = [PSSpecifier preferenceSpecifierNamed:@"复制音乐链接"
-                                                                        target:self
-                                                                           set:@selector(setPreferenceValue:forSpecifier:)
-                                                                           get:@selector(readPreferenceValue:)
-                                                                        detail:Nil
-                                                                          cell:PSSwitchCell
-                                                                          edit:Nil];
+        HBPreferenceSpecifier *copyMusicSwitch = [[HBPreferenceSpecifier alloc] init];
+        [copyMusicSwitch setName:@"复制音乐链接"];
         [copyMusicSwitch setIdentifier:@"copyMusicLink"];
         [copyMusicSwitch setProperty:@YES forKey:@"default"];
+        [copyMusicSwitch setTarget:self];
+        [copyMusicSwitch setSetAction:@selector(setPreferenceValue:forSpecifier:)];
+        [copyMusicSwitch setGetAction:@selector(readPreferenceValue:)];
         [specifiers addObject:copyMusicSwitch];
         
         // 添加关于组
-        PSSpecifier *aboutGroup = [PSSpecifier groupSpecifierWithName:@"关于"];
+        HBPreferenceSpecifier *aboutGroup = [[HBPreferenceSpecifier alloc] init];
         [aboutGroup setName:@"关于"];
         [specifiers addObject:aboutGroup];
         
         // 添加关于按钮
-        PSSpecifier *aboutButton = [PSSpecifier preferenceSpecifierNamed:@"关于"
-                                                                   target:self
-                                                                      set:NULL
-                                                                      get:NULL
-                                                                   detail:Nil
-                                                                     cell:PSLinkCell
-                                                                     edit:Nil];
+        HBPreferenceSpecifier *aboutButton = [[HBPreferenceSpecifier alloc] init];
+        [aboutButton setName:@"关于"];
         [aboutButton setIdentifier:@"about"];
         [aboutButton setButtonAction:@selector(showAbout)];
         [specifiers addObject:aboutButton];
@@ -147,7 +118,7 @@
     return _specifiers;
 }
 
-- (id)readPreferenceValue:(PSSpecifier*)specifier {
+- (id)readPreferenceValue:(HBPreferenceSpecifier*)specifier {
     NSString *key = [specifier identifier];
     id defaultValue = [specifier properties][@"default"];
     
@@ -173,7 +144,7 @@
     return defaultValue;
 }
 
-- (void)setPreferenceValue:(id)value forSpecifier:(PSSpecifier*)specifier {
+- (void)setPreferenceValue:(id)value forSpecifier:(HBPreferenceSpecifier*)specifier {
     NSString *key = [specifier identifier];
     
     // 保存设置值到NSUserDefaults
