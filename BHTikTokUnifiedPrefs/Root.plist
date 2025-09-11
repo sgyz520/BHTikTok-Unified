@@ -12,7 +12,7 @@
         </dict>
         <dict>
             <key>cell</key>
-            <string>PSTitleValueCell</string>
+            <string>PSStaticTextCell</string>
             <key>label</key>
             <string>Version</string>
             <key>value</key>
@@ -20,7 +20,7 @@
         </dict>
         <dict>
             <key>cell</key>
-            <string>PSTitleValueCell</string>
+            <string>PSStaticTextCell</string>
             <key>label</key>
             <string>Author</string>
             <key>value</key>
@@ -40,7 +40,7 @@
             <key>defaults</key>
             <string>com.apple.Preferences</string>
             <key>key</key>
-            <string>dw_videos</string>
+            <string>enableDownload</string>
             <key>label</key>
             <string>启用下载功能</string>
         </dict>
@@ -52,7 +52,7 @@
             <key>defaults</key>
             <string>com.apple.Preferences</string>
             <key>key</key>
-            <string>show_region_info</string>
+            <string>showRegionInfo</string>
             <key>label</key>
             <string>显示地区信息</string>
         </dict>
@@ -64,7 +64,7 @@
             <key>defaults</key>
             <string>com.apple.Preferences</string>
             <key>key</key>
-            <string>show_upload_time</string>
+            <string>showUploadTime</string>
             <key>label</key>
             <string>显示上传时间</string>
         </dict>
@@ -82,7 +82,7 @@
             <key>defaults</key>
             <string>com.apple.Preferences</string>
             <key>key</key>
-            <string>copy_decription</string>
+            <string>copyVideoDecription</string>
             <key>label</key>
             <string>复制视频描述</string>
         </dict>
@@ -94,7 +94,7 @@
             <key>defaults</key>
             <string>com.apple.Preferences</string>
             <key>key</key>
-            <string>copy_video_link</string>
+            <string>copyVideoLink</string>
             <key>label</key>
             <string>复制视频链接</string>
         </dict>
@@ -106,7 +106,7 @@
             <key>defaults</key>
             <string>com.apple.Preferences</string>
             <key>key</key>
-            <string>copy_music_link</string>
+            <string>copyMusicLink</string>
             <key>label</key>
             <string>复制音乐链接</string>
         </dict>
