@@ -264,7 +264,17 @@
 + (UIColor *)accentColor {
     NSData *colorData = [[NSUserDefaults standardUserDefaults] objectForKey:@"accent_color"];
     if (colorData) {
-        return [NSKeyedUnarchiver unarchiveObjectWithData:colorData];
+        if (@available(iOS 12.0, *)) {
+            NSError *error = nil;
+            UIColor *color = [NSKeyedUnarchiver unarchivedObjectOfClass:[UIColor class] fromData:colorData error:&error];
+            if (error) {
+                NSLog(@"[BHTikTok Unified] 解档颜色失败: %@", error.localizedDescription);
+                return [UIColor colorWithRed:1.0 green:0.0 blue:0.5 alpha:1.0]; // 默认粉色
+            }
+            return color ?: [UIColor colorWithRed:1.0 green:0.0 blue:0.5 alpha:1.0];
+        } else {
+            return [NSKeyedUnarchiver unarchiveObjectWithData:colorData];
+        }
     }
     return [UIColor colorWithRed:1.0 green:0.0 blue:0.5 alpha:1.0]; // 默认粉色
 }
