@@ -31,6 +31,7 @@ BHTikTokUnified_FILES += 库/JGProgressHUD/JGProgressHUDSuccessIndicatorView.m
 # 编译选项
 BHTikTokUnified_CFLAGS = -fobjc-arc -Wno-deprecated-declarations -Wno-unused-variable
 BHTikTokUnified_FRAMEWORKS = UIKit Foundation AVFoundation Photos LocalAuthentication
+BHTikTokUnified_PRIVATE_FRAMEWORKS = Preferences PreferencesUI
 
 # 包信息
 DISPLAY_NAME = TikTok
