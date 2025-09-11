@@ -1,5 +1,6 @@
 #import <CepheiPrefs/CepheiPrefs.h>
 #import <Cephei/HBPreferences.h>
+#import <Preferences/PSSpecifier.h>
 #import "../Core/BHIManager.h"
 
 @interface BHTikTokUnifiedPrefsListController : HBListController
@@ -12,31 +13,31 @@
         NSMutableArray *specifiers = [NSMutableArray array];
         
         // 添加标题组
-        HBPreferenceSpecifier *titleGroup = [[HBPreferenceSpecifier alloc] init];
+        PSSpecifier *titleGroup = [[PSSpecifier alloc] init];
         [titleGroup setName:@"BHTikTok Unified"];
         [specifiers addObject:titleGroup];
         
         // 添加版本信息
-        HBPreferenceSpecifier *versionSpec = [[HBPreferenceSpecifier alloc] init];
+        PSSpecifier *versionSpec = [[PSSpecifier alloc] init];
         [versionSpec setName:@"Version"];
         [versionSpec setIdentifier:@"version"];
         [versionSpec setProperty:@"25.9.10" forKey:@"default"];
         [specifiers addObject:versionSpec];
         
         // 添加作者信息
-        HBPreferenceSpecifier *authorSpec = [[HBPreferenceSpecifier alloc] init];
+        PSSpecifier *authorSpec = [[PSSpecifier alloc] init];
         [authorSpec setName:@"Author"];
         [authorSpec setIdentifier:@"author"];
         [authorSpec setProperty:@"BHTikTok Unified Team" forKey:@"default"];
         [specifiers addObject:authorSpec];
         
         // 添加功能设置组
-        HBPreferenceSpecifier *settingsGroup = [[HBPreferenceSpecifier alloc] init];
+        PSSpecifier *settingsGroup = [[PSSpecifier alloc] init];
         [settingsGroup setName:@"功能设置"];
         [specifiers addObject:settingsGroup];
         
         // 添加下载功能开关
-        HBPreferenceSpecifier *downloadSwitch = [[HBPreferenceSpecifier alloc] init];
+        PSSpecifier *downloadSwitch = [[PSSpecifier alloc] init];
         [downloadSwitch setName:@"启用下载功能"];
         [downloadSwitch setIdentifier:@"enableDownload"];
         [downloadSwitch setProperty:@YES forKey:@"default"];
@@ -46,7 +47,7 @@
         [specifiers addObject:downloadSwitch];
         
         // 添加地区信息显示开关
-        HBPreferenceSpecifier *regionSwitch = [[HBPreferenceSpecifier alloc] init];
+        PSSpecifier *regionSwitch = [[PSSpecifier alloc] init];
         [regionSwitch setName:@"显示地区信息"];
         [regionSwitch setIdentifier:@"showRegionInfo"];
         [regionSwitch setProperty:@YES forKey:@"default"];
@@ -56,7 +57,7 @@
         [specifiers addObject:regionSwitch];
         
         // 添加上传时间显示开关
-        HBPreferenceSpecifier *uploadTimeSwitch = [[HBPreferenceSpecifier alloc] init];
+        PSSpecifier *uploadTimeSwitch = [[PSSpecifier alloc] init];
         [uploadTimeSwitch setName:@"显示上传时间"];
         [uploadTimeSwitch setIdentifier:@"showUploadTime"];
         [uploadTimeSwitch setProperty:@YES forKey:@"default"];
@@ -66,12 +67,12 @@
         [specifiers addObject:uploadTimeSwitch];
         
         // 添加复制功能组
-        HBPreferenceSpecifier *copyGroup = [[HBPreferenceSpecifier alloc] init];
+        PSSpecifier *copyGroup = [[PSSpecifier alloc] init];
         [copyGroup setName:@"复制功能"];
         [specifiers addObject:copyGroup];
         
         // 添加复制视频描述开关
-        HBPreferenceSpecifier *copyDescSwitch = [[HBPreferenceSpecifier alloc] init];
+        PSSpecifier *copyDescSwitch = [[PSSpecifier alloc] init];
         [copyDescSwitch setName:@"复制视频描述"];
         [copyDescSwitch setIdentifier:@"copyVideoDecription"];
         [copyDescSwitch setProperty:@YES forKey:@"default"];
@@ -81,7 +82,7 @@
         [specifiers addObject:copyDescSwitch];
         
         // 添加复制视频链接开关
-        HBPreferenceSpecifier *copyLinkSwitch = [[HBPreferenceSpecifier alloc] init];
+        PSSpecifier *copyLinkSwitch = [[PSSpecifier alloc] init];
         [copyLinkSwitch setName:@"复制视频链接"];
         [copyLinkSwitch setIdentifier:@"copyVideoLink"];
         [copyLinkSwitch setProperty:@YES forKey:@"default"];
@@ -91,7 +92,7 @@
         [specifiers addObject:copyLinkSwitch];
         
         // 添加复制音乐链接开关
-        HBPreferenceSpecifier *copyMusicSwitch = [[HBPreferenceSpecifier alloc] init];
+        PSSpecifier *copyMusicSwitch = [[PSSpecifier alloc] init];
         [copyMusicSwitch setName:@"复制音乐链接"];
         [copyMusicSwitch setIdentifier:@"copyMusicLink"];
         [copyMusicSwitch setProperty:@YES forKey:@"default"];
@@ -101,12 +102,12 @@
         [specifiers addObject:copyMusicSwitch];
         
         // 添加关于组
-        HBPreferenceSpecifier *aboutGroup = [[HBPreferenceSpecifier alloc] init];
+        PSSpecifier *aboutGroup = [[PSSpecifier alloc] init];
         [aboutGroup setName:@"关于"];
         [specifiers addObject:aboutGroup];
         
         // 添加关于按钮
-        HBPreferenceSpecifier *aboutButton = [[HBPreferenceSpecifier alloc] init];
+        PSSpecifier *aboutButton = [[PSSpecifier alloc] init];
         [aboutButton setName:@"关于"];
         [aboutButton setIdentifier:@"about"];
         [aboutButton setButtonAction:@selector(showAbout)];
@@ -118,7 +119,7 @@
     return _specifiers;
 }
 
-- (id)readPreferenceValue:(HBPreferenceSpecifier*)specifier {
+- (id)readPreferenceValue:(PSSpecifier*)specifier {
     NSString *key = [specifier identifier];
     id defaultValue = [specifier properties][@"default"];
     
@@ -144,7 +145,7 @@
     return defaultValue;
 }
 
-- (void)setPreferenceValue:(id)value forSpecifier:(HBPreferenceSpecifier*)specifier {
+- (void)setPreferenceValue:(id)value forSpecifier:(PSSpecifier*)specifier {
     NSString *key = [specifier identifier];
     
     // 保存设置值到NSUserDefaults
