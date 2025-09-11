@@ -1,5 +1,6 @@
 #import <CepheiPrefs/CepheiPrefs.h>
 #import <Cephei/HBPreferences.h>
+#import <CepheiPrefs/HBPreferenceSpecifier.h>
 #import "../Core/BHIManager.h"
 
 @interface BHTikTokUnifiedPrefsListController : HBListController
