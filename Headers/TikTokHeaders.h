@@ -150,7 +150,14 @@ static inline BOOL is_iPad(void);
 
 // 通用函数实现
 static inline UIViewController *topMostController(void) {
-    UIViewController *topController = [UIApplication sharedApplication].keyWindow.rootViewController;
+    UIWindow *window = nil;
+    if (@available(iOS 13.0, *)) {
+        window = [[UIApplication sharedApplication].windows firstObject];
+    } else {
+        window = [UIApplication sharedApplication].keyWindow;
+    }
+    
+    UIViewController *topController = window.rootViewController;
     
     while (topController.presentedViewController) {
         topController = topController.presentedViewController;
