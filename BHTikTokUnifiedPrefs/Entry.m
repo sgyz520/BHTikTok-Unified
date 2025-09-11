@@ -1,9 +1,14 @@
 #import <CepheiPrefs/CepheiPrefs.h>
 #import <Cephei/HBPreferences.h>
+#import <Preferences/PSListController.h>
 #import <Preferences/PSSpecifier.h>
+#import <Preferences/PSSwitchCell.h>
+#import <Preferences/PSGroupCell.h>
+#import <Preferences/PSStaticTextCell.h>
+#import <Preferences/PSButtonCell.h>
 #import "../Core/BHIManager.h"
 
-@interface BHTikTokUnifiedPrefsListController : HBListController
+@interface BHTikTokUnifiedPrefsListController : PSListController
 @end
 
 @implementation BHTikTokUnifiedPrefsListController
@@ -64,7 +69,7 @@
                                                                    detail:nil 
                                                                       cell:PSSwitchCell 
                                                                       edit:nil];
-        [downloadSwitch setProperty:@"enableDownload" forKey:@"key"];
+        [downloadSwitch setProperty:@"dw_videos" forKey:@"key"];
         [downloadSwitch setProperty:@YES forKey:@"default"];
         [specifiers addObject:downloadSwitch];
         
@@ -76,7 +81,7 @@
                                                                  detail:nil 
                                                                     cell:PSSwitchCell 
                                                                     edit:nil];
-        [regionSwitch setProperty:@"showRegionInfo" forKey:@"key"];
+        [regionSwitch setProperty:@"show_region_info" forKey:@"key"];
         [regionSwitch setProperty:@YES forKey:@"default"];
         [specifiers addObject:regionSwitch];
         
@@ -88,7 +93,7 @@
                                                                      detail:nil 
                                                                         cell:PSSwitchCell 
                                                                         edit:nil];
-        [uploadTimeSwitch setProperty:@"showUploadTime" forKey:@"key"];
+        [uploadTimeSwitch setProperty:@"show_upload_time" forKey:@"key"];
         [uploadTimeSwitch setProperty:@YES forKey:@"default"];
         [specifiers addObject:uploadTimeSwitch];
         
@@ -110,7 +115,7 @@
                                                                    detail:nil 
                                                                       cell:PSSwitchCell 
                                                                       edit:nil];
-        [copyDescSwitch setProperty:@"copyVideoDecription" forKey:@"key"];
+        [copyDescSwitch setProperty:@"copy_decription" forKey:@"key"];
         [copyDescSwitch setProperty:@YES forKey:@"default"];
         [specifiers addObject:copyDescSwitch];
         
@@ -122,7 +127,7 @@
                                                                    detail:nil 
                                                                       cell:PSSwitchCell 
                                                                       edit:nil];
-        [copyLinkSwitch setProperty:@"copyVideoLink" forKey:@"key"];
+        [copyLinkSwitch setProperty:@"copy_video_link" forKey:@"key"];
         [copyLinkSwitch setProperty:@YES forKey:@"default"];
         [specifiers addObject:copyLinkSwitch];
         
@@ -134,7 +139,7 @@
                                                                     detail:nil 
                                                                        cell:PSSwitchCell 
                                                                        edit:nil];
-        [copyMusicSwitch setProperty:@"copyMusicLink" forKey:@"key"];
+        [copyMusicSwitch setProperty:@"copy_music_link" forKey:@"key"];
         [copyMusicSwitch setProperty:@YES forKey:@"default"];
         [specifiers addObject:copyMusicSwitch];
         
@@ -168,20 +173,19 @@
 
 - (id)readPreferenceValue:(PSSpecifier*)specifier {
     NSString *key = [specifier propertyForKey:@"key"];
-    id defaultValue = [specifier propertyForKey:@"default"];
     
     // 从BHIManager获取设置值
-    if ([key isEqualToString:@"enableDownload"]) {
+    if ([key isEqualToString:@"dw_videos"]) {
         return @([BHIManager downloadVideos]);
-    } else if ([key isEqualToString:@"showRegionInfo"]) {
+    } else if ([key isEqualToString:@"show_region_info"]) {
         return @([BHIManager showRegionInfo]);
-    } else if ([key isEqualToString:@"showUploadTime"]) {
+    } else if ([key isEqualToString:@"show_upload_time"]) {
         return @([BHIManager showUploadTime]);
-    } else if ([key isEqualToString:@"copyVideoDecription"]) {
-        return @([BHIManager copyVideoDecription]);
-    } else if ([key isEqualToString:@"copyVideoLink"]) {
+    } else if ([key isEqualToString:@"copy_decription"]) {
+        return @([BHIManager copyVideoDescription]);
+    } else if ([key isEqualToString:@"copy_video_link"]) {
         return @([BHIManager copyVideoLink]);
-    } else if ([key isEqualToString:@"copyMusicLink"]) {
+    } else if ([key isEqualToString:@"copy_music_link"]) {
         return @([BHIManager copyMusicLink]);
     } else if ([key isEqualToString:@"version"]) {
         return @"25.9.10";
@@ -189,7 +193,7 @@
         return @"BHTikTok Unified Team";
     }
     
-    return defaultValue;
+    return @NO;
 }
 
 - (void)setPreferenceValue:(id)value forSpecifier:(PSSpecifier*)specifier {
@@ -199,16 +203,15 @@
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     [defaults setObject:value forKey:key];
     [defaults synchronize];
-    
-    // 注意：BHIManager类中没有对应的setter方法，所以这里只保存到NSUserDefaults
-    // 实际的功能实现应该在BHIManager内部读取这些NSUserDefaults值
 }
 
 - (void)showAbout {
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"关于 BHTikTok Unified"
-                                                                   message:@"功能强大的 TikTok 增强插件，整合版本结合完整功能实现与多语言支持。\n\n基于 @hahios-2506 的 BHTiktok 和 @dayanch96 的 BHTikTok-Plus 项目"
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"关于 BHTikTok Unified" 
+                                                                   message:@"BHTikTok Unified 是一个功能强大的TikTok增强工具，提供下载、去广告、地区信息显示等功能。\n\n版本：25.9.10\n作者：BHTikTok Unified Team" 
                                                             preferredStyle:UIAlertControllerStyleAlert];
+    
     [alert addAction:[UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:nil]];
+    
     [self presentViewController:alert animated:YES completion:nil];
 }
 
