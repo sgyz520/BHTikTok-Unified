@@ -57,7 +57,7 @@
 
 #pragma mark - 复制功能
 
-+ (BOOL)copyVideoDecription {
++ (BOOL)copyVideoDescription {
     return [[NSUserDefaults standardUserDefaults] boolForKey:@"copy_decription"];
 }
 

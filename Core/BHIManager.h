@@ -20,7 +20,7 @@
 + (BOOL)hideSearchBar;
 
 // 复制功能
-+ (BOOL)copyVideoDecription;
++ (BOOL)copyVideoDescription;
 + (BOOL)copyMusicLink;
 + (BOOL)copyVideoLink;
 + (BOOL)profileSave;
