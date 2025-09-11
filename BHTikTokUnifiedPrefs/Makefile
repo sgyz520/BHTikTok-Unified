@@ -3,8 +3,8 @@ include $(THEOS)/makefiles/common.mk
 BUNDLE_NAME = BHTikTokUnifiedPrefs
 BHTikTokUnifiedPrefs_FILES = Entry.m Tweak.x
 BHTikTokUnifiedPrefs_FRAMEWORKS = UIKit Foundation
-BHTikTokUnifiedPrefs_PRIVATE_FRAMEWORKS =
-BHTikTokUnifiedPrefs_EXTRA_FRAMEWORKS = Cephei CepheiPrefs CepheiUI
+BHTikTokUnifiedPrefs_PRIVATE_FRAMEWORKS = Preferences PreferencesUI
+BHTikTokUnifiedPrefs_EXTRA_FRAMEWORKS += Cephei CepheiPrefs
 BHTikTokUnifiedPrefs_INSTALL_PATH = /Library/PreferenceBundles
 BHTikTokUnifiedPrefs_CFLAGS = -fobjc-arc
 
