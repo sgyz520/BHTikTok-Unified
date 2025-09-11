@@ -6,7 +6,7 @@ BHTikTokUnifiedPrefs_FRAMEWORKS = UIKit Foundation
 BHTikTokUnifiedPrefs_PRIVATE_FRAMEWORKS = Preferences
 BHTikTokUnifiedPrefs_EXTRA_FRAMEWORKS = Cephei CepheiPrefs
 BHTikTokUnifiedPrefs_INSTALL_PATH = /Library/PreferenceBundles
-BHTikTokUnifiedPrefs_CFLAGS = -fobjc-arc
+BHTikTokUnifiedPrefs_CFLAGS = -fobjc-arc -Wno-deprecated-declarations -Wno-deprecated-implementations
 
 include $(THEOS_MAKE_PATH)/bundle.mk
 
