@@ -1,9 +1,12 @@
 #import <CepheiPrefs/CepheiPrefs.h>
 #import <Cephei/HBPreferences.h>
-#import <Preferences/Preferences.h>
+#import <Cephei/HBPreferences.h>
+#import <CepheiPrefs/HBRootListController.h>
+#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
 #import "../Core/BHIManager.h"
 
-@interface BHTikTokUnifiedPrefsListController : PSListController
+@interface BHTikTokUnifiedPrefsListController : HBRootListController
 @end
 
 @implementation BHTikTokUnifiedPrefsListController
