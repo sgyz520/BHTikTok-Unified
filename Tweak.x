@@ -464,7 +464,7 @@ static BOOL isAuthenticationShowed = FALSE;
                              message:nil 
                       preferredStyle:UIAlertControllerStyleActionSheet];
         
-        if ([BHIManager copyVideoDecription]) {
+        if ([BHIManager copyVideoDescription]) {
             [alert addAction:[UIAlertAction 
                 actionWithTitle:NSLocalizedStringFromTable(@"CopyDescription", @"BHTikTokUnified", @"Copy Description")
                           style:UIAlertActionStyleDefault 
@@ -544,6 +544,40 @@ static BOOL isAuthenticationShowed = FALSE;
     %orig;
 }
 
+// 地区信息显示
+- (void)configureWithModel:(id)model {
+    %orig;
+    
+    // 添加地区信息视图
+    if ([BHIManager showRegionInfo] || [BHIManager showUploadTime]) {
+        // 检查是否已经添加了地区信息视图
+        BHRegionInfoView *regionInfoView = objc_getAssociatedObject(self, @selector(bh_regionInfoView));
+        
+        if (!regionInfoView) {
+            regionInfoView = [[BHRegionInfoView alloc] initWithFrame:CGRectZero];
+            regionInfoView.translatesAutoresizingMaskIntoConstraints = NO;
+            [self.contentView addSubview:regionInfoView];
+            
+            // 设置约束，将地区信息视图放在描述信息下方，进度条上方
+            [NSLayoutConstraint activateConstraints:@[
+                [regionInfoView.leadingAnchor constraintEqualToAnchor:self.contentView.leadingAnchor constant:12],
+                [regionInfoView.trailingAnchor constraintEqualToAnchor:self.contentView.trailingAnchor constant:-12],
+                [regionInfoView.topAnchor constraintEqualToAnchor:self.descriptionLabel.bottomAnchor constant:8]
+            ]];
+            
+            // 保存关联对象
+            objc_setAssociatedObject(self, @selector(bh_regionInfoView), regionInfoView, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+        }
+        
+        // 配置地区信息视图
+        [regionInfoView configureWithModel:model];
+    }
+}
+
+%new
+- (BHRegionInfoView *)bh_regionInfoView {
+    return objc_getAssociatedObject(self, @selector(bh_regionInfoView));
+}
 %end
 
 // 构造函数
