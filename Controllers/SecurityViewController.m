@@ -156,7 +156,6 @@
 
 - (void)updateInterfaceForAuthenticationType {
     if ([self isBiometricAuthenticationAvailable]) {
-        NSError *error = nil;
         LABiometryType biometryType = [self.authContext biometryType];
         
         switch (biometryType) {
