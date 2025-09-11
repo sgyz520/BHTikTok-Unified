@@ -3,7 +3,14 @@
         Bundles = (
             "com.zhiliaoapp.musically",
             "com.ss.iphone.ugc.Aweme",
-            "com.zhiliaoapp.musically.go"
+            "com.zhiliaoapp.musically.go",
+            "com.ss.iphone.ugc.AwemeLite",
+            "com.zhiliaoapp.musically.lite"
+        );
+        Executables = (
+            "TikTok",
+            "musically",
+            "Aweme"
         );
     };
 }
