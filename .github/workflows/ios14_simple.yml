@@ -1,0 +1,73 @@
+name: iOS 14.4 Simple Build
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main, master ]
+    paths:
+      - '**.x'
+      - '**.m'
+      - '**.plist'
+      - 'Makefile'
+      - 'control'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - name: Install Dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential fakeroot libncurses-dev curl git
+        
+    - name: Setup Theos
+      run: |
+        git clone --recursive https://github.com/theos/theos.git $GITHUB_WORKSPACE/theos
+        export THEOS=$GITHUB_WORKSPACE/theos
+        export PATH=$THEOS/bin:$PATH
+        
+    - name: Cache SDK
+      uses: actions/cache@v4
+      id: sdk-cache
+      with:
+        path: theos/sdks/
+        key: ios-sdk-14
+        
+    - name: Download SDK
+      if: steps.sdk-cache.outputs.cache-hit != 'true'
+      run: |
+        mkdir -p theos/sdks
+        cd theos/sdks
+        
+        # 使用已知有效的SDK链接
+        echo "下载iOS SDK..."
+        curl -L -o sdk.tar.gz https://github.com/sbingner/sdks/raw/master/iPhoneOS14.4.sdk.tar.gz
+        
+        if [ -f sdk.tar.gz ]; then
+          tar -xzf sdk.tar.gz
+          rm sdk.tar.gz
+          echo "✅ SDK安装完成"
+        else
+          echo "⚠️ 使用基础配置继续构建"
+        fi
+        
+    - name: Build
+      run: |
+        export THEOS=$GITHUB_WORKSPACE/theos
+        export PATH=$THEOS/bin:$PATH
+        export ARCHS="arm64"
+        export TARGET="iphone:clang:14.4:14.0"
+        
+        make clean
+        make package FINALPACKAGE=1
+        
+    - name: Upload
+      uses: actions/upload-artifact@v4
+      with:
+        name: BHTikTok-iOS14.4
+        path: packages/*.deb
+        retention-days: 30
