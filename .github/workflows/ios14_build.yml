@@ -28,7 +28,7 @@ jobs:
         sdk-version: iPhoneOS14.4.sdk
         
     - name: Cache iOS 14.4 SDK
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       id: sdk-cache
       with:
         path: theos/sdks/
@@ -59,14 +59,16 @@ jobs:
         make package FINALPACKAGE=1
         
     - name: Upload Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: BHTikTokUnified-iOS14.4
         path: packages/*.deb
+        compression-level: 9
+        retention-days: 30
         
     - name: Release
       if: github.event_name == 'push'
-      uses: softprops/action-gh-release@v1
+      uses: softprops/action-gh-release@v2
       with:
         files: packages/*.deb
         tag_name: ios14.4-${{ github.run_number }}
@@ -76,5 +78,9 @@ jobs:
           - 修复SDK兼容性问题
           - 优化Bundle Filter
           - 增强稳定性
+          - 更新到GitHub Actions最新版本
+        draft: false
+        prerelease: false
+        generate_release_notes: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
