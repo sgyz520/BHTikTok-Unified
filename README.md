@@ -140,7 +140,7 @@ This is a unified version that combines the advantages of both **BHTiktok-main**
 ## 🛠️ 开发者信息 | Developer Information
 
 ### 原始项目贡献者 | Original Project Contributors
-- **BHTiktok**: [@hahios-2506](https://github.com/hahios-2506) - [项目地址](https://github.com/hahios-2506/BHTiktok)
+- **BHTiktok**: [@BandarHL](https://github.com/BandarHL) - [项目地址](https://github.com/BandarHL/BHTikTok)
 - **BHTikTok-Plus**: [@dayanch96](https://github.com/dayanch96) - [项目地址](https://github.com/dayanch96/BHTikTok-Plus)
 
 ### 整合版本开发 | Unified Version Development
@@ -184,4 +184,5 @@ This project is for educational and research purposes only. Please comply with l
 <p align="center">
   <strong>感谢使用 BHTikTok Unified！| Thank you for using BHTikTok Unified!</strong><br>
   <em>让 TikTok 体验更加精彩 | Making TikTok experience even better</em>
+
 </p>
