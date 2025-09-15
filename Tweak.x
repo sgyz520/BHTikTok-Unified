@@ -115,19 +115,76 @@ static BOOL isAuthenticationShowed = FALSE;
 %hook AWESettingsNormalSectionViewModel
 - (void)viewDidLoad {
     %orig;
-    if ([self.sectionIdentifier isEqualToString:@"account"]) {
-        TTKSettingsBaseCellPlugin *BHTikTokSettingsPluginCell = [[%c(TTKSettingsBaseCellPlugin) alloc] 
-            initWithPluginContext:self.context];
+    
+    // 添加调试日志
+    NSLog(@"[BHTikTok Unified] AWESettingsNormalSectionViewModel viewDidLoad called");
+    NSLog(@"[BHTikTok Unified] Section identifier: %@", self.sectionIdentifier);
+    
+    // 尝试多个可能的section identifier
+    if ([self.sectionIdentifier isEqualToString:@"account"] || 
+        [self.sectionIdentifier isEqualToString:@"Account"] ||
+        [self.sectionIdentifier isEqualToString:@"settings"] ||
+        [self.sectionIdentifier isEqualToString:@"Settings"] ||
+        [self.sectionIdentifier isEqualToString:@"general"] ||
+        [self.sectionIdentifier isEqualToString:@"General"]) {
+        
+        NSLog(@"[BHTikTok Unified] 匹配到section: %@，准备添加设置项", self.sectionIdentifier);
+        
+        @try {
+            // 检查必要的类是否存在
+            Class TTKSettingsBaseCellPluginClass = %c(TTKSettingsBaseCellPlugin);
+            Class AWESettingItemModelClass = %c(AWESettingItemModel);
+            
+            if (!TTKSettingsBaseCellPluginClass) {
+                NSLog(@"[BHTikTok Unified] 警告: TTKSettingsBaseCellPlugin 类不存在");
+                return;
+            }
+            
+            if (!AWESettingItemModelClass) {
+                NSLog(@"[BHTikTok Unified] 警告: AWESettingItemModel 类不存在");
+                return;
+            }
+            
+            TTKSettingsBaseCellPlugin *BHTikTokSettingsPluginCell = [[TTKSettingsBaseCellPluginClass alloc] 
+                initWithPluginContext:self.context];
 
-        AWESettingItemModel *BHTikTokSettingsItemModel = [[%c(AWESettingItemModel) alloc] 
-            initWithIdentifier:@"bhtiktok_unified_settings"];
-        [BHTikTokSettingsItemModel setTitle:NSLocalizedStringFromTable(@"Settings", @"BHTikTokUnified", @"BHTikTok Unified Settings")];
-        [BHTikTokSettingsItemModel setDetail:NSLocalizedStringFromTable(@"SettingsDescription", @"BHTikTokUnified", @"Configure BHTikTok Unified features")];
-        [BHTikTokSettingsItemModel setIconImage:[UIImage systemImageNamed:@"gear.circle.fill"]];
-        [BHTikTokSettingsItemModel setType:99];
+            AWESettingItemModel *BHTikTokSettingsItemModel = [[AWESettingItemModelClass alloc] 
+                initWithIdentifier:@"bhtiktok_unified_settings"];
+            
+            // 设置标题和描述
+            [BHTikTokSettingsItemModel setTitle:@"BHTikTok Unified 设置"];
+            [BHTikTokSettingsItemModel setDetail:@"配置 BHTikTok Unified 功能"];
+            
+            // 尝试设置图标
+            @try {
+                UIImage *icon = [UIImage systemImageNamed:@"gear.circle.fill"];
+                if (icon) {
+                    [BHTikTokSettingsItemModel setIconImage:icon];
+                } else {
+                    NSLog(@"[BHTikTok Unified] 无法加载系统图标，使用默认");
+                }
+            } @catch (NSException *iconException) {
+                NSLog(@"[BHTikTok Unified] 设置图标异常: %@", iconException.reason);
+            }
+            
+            [BHTikTokSettingsItemModel setType:99];
 
-        [BHTikTokSettingsPluginCell setItemModel:BHTikTokSettingsItemModel];
-        [self insertModel:BHTikTokSettingsPluginCell atIndex:0 animated:true];
+            [BHTikTokSettingsPluginCell setItemModel:BHTikTokSettingsItemModel];
+            
+            // 尝试插入设置项
+            if ([self respondsToSelector:@selector(insertModel:atIndex:animated:)]) {
+                [self insertModel:BHTikTokSettingsPluginCell atIndex:0 animated:true];
+                NSLog(@"[BHTikTok Unified] 设置项已成功添加到索引0");
+            } else {
+                NSLog(@"[BHTikTok Unified] 警告: insertModel:atIndex:animated: 方法不存在");
+            }
+            
+        } @catch (NSException *exception) {
+            NSLog(@"[BHTikTok Unified] 添加设置项时发生异常: %@", exception.reason);
+            NSLog(@"[BHTikTok Unified] 异常堆栈: %@", exception.callStackSymbols);
+        }
+    } else {
+        NSLog(@"[BHTikTok Unified] 未匹配section identifier: %@", self.sectionIdentifier);
     }
 }
 %end
@@ -616,5 +673,27 @@ static BOOL isAuthenticationShowed = FALSE;
         [[NSUserDefaults standardUserDefaults] setObject:preferredLanguage forKey:@"BHTikTokUnified_Language"];
     }
     
-    NSLog(@"[BHTikTok Unified] 已加载，语言: %@", preferredLanguage);
+    // 添加详细的初始化日志
+    NSLog(@"[BHTikTok Unified] ============================================");
+    NSLog(@"[BHTikTok Unified] 插件初始化开始");
+    NSLog(@"[BHTikTok Unified] 版本: 25.9.10");
+    NSLog(@"[BHTikTok Unified] 语言: %@", preferredLanguage);
+    NSLog(@"[BHTikTok Unified] Bundle ID: %@", [[NSBundle mainBundle] bundleIdentifier]);
+    NSLog(@"[BHTikTok Unified] 应用名称: %@", [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"]);
+    NSLog(@"[BHTikTok Unified] iOS 版本: %@", [[UIDevice currentDevice] systemVersion]);
+    NSLog(@"[BHTikTok Unified] 设备型号: %@", [[UIDevice currentDevice] model]);
+    
+    // 检查关键类是否存在
+    NSLog(@"[BHTikTok Unified] 检查关键类...");
+    
+    Class AWESettingsNormalSectionViewModelClass = %c(AWESettingsNormalSectionViewModel);
+    Class TTKSettingsBaseCellPluginClass = %c(TTKSettingsBaseCellPlugin);
+    Class AWESettingItemModelClass = %c(AWESettingItemModel);
+    
+    NSLog(@"[BHTikTok Unified] AWESettingsNormalSectionViewModel: %@", AWESettingsNormalSectionViewModelClass ? @"存在" : @"不存在");
+    NSLog(@"[BHTikTok Unified] TTKSettingsBaseCellPlugin: %@", TTKSettingsBaseCellPluginClass ? @"存在" : @"不存在");
+    NSLog(@"[BHTikTok Unified] AWESettingItemModel: %@", AWESettingItemModelClass ? @"存在" : @"不存在");
+    
+    NSLog(@"[BHTikTok Unified] 插件初始化完成");
+    NSLog(@"[BHTikTok Unified] ============================================");
 }
