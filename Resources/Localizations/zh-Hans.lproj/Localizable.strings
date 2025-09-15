@@ -1,0 +1,148 @@
+/* Headers */
+"Settings" = "设置";
+"Developer" = "BHTikTok Unified 开发者";
+"PlusDeveloper" = "BHTikTok Unified 团队";
+
+/* Main */
+"DownloadOptions" = "下载选项";
+"FeedOptions" = "视频选项";
+"ProfileOptions" = "个人主页";
+"ConfirmationOptions" = "确认提示";
+"RegionOptions" = "国家区域";
+"FakeOptions" = "伪造信息";
+"ColorOptions" = "外观选项";
+"OtherOptions" = "其他选项";
+"Apply" = "应用更改";
+"SettingsDescription" = "配置 BHTikTok Unified 功能";
+
+/* Developer */
+"TipJar" = "捐赠开发";
+"DonateViaPayPal" = "通过PayPal捐赠";
+"Donate" = "支持开发者";
+"Telegram" = "我们的Telegram频道";
+"Thanks" = "特别感谢";
+"DonateMessage" = "如果你喜欢BHTikTok Unified并想支持我，你可以用下面任何方式给我买杯咖啡。\n\n感谢❤️";
+"MaybeLater" = "也许以后";
+
+/* Download Options */
+"DownloadVideos" = "下载视频";
+"DownloadMusics" = "下载音乐";
+"DownloadHDVideos" = "下载高清视频";
+"DownloadWithoutWatermark" = "下载无水印视频";
+"SaveToPhotos" = "保存到相册";
+"SaveToFiles" = "保存到文件";
+"DownloadLocation" = "下载位置";
+
+/* Feed Options */
+"HideAds" = "隐藏广告";
+"ShowProgressBar" = "显示进度条";
+"AutoPlayNextVideo" = "自动播放下一个视频";
+"HideUIElements" = "隐藏界面元素";
+"HideTabBarLabels" = "隐藏标签栏文字";
+"HideSearchBar" = "隐藏搜索栏";
+"CustomFeedLayout" = "自定义信息流布局";
+
+/* Profile Options */
+"SaveProfileImage" = "保存头像";
+"CopyProfileInfo" = "复制个人信息";
+"ExtendedBio" = "扩展个人简介";
+"ExtendedComment" = "扩展评论显示";
+"CopyUsername" = "复制用户名";
+"CopyBio" = "复制个人简介";
+"SaveProfileImageMessage" = "你想要保存这个头像吗？";
+
+/* Confirmation Options */
+"LikeConfirmation" = "点赞确认";
+"CommentLikeConfirmation" = "评论点赞确认";
+"CommentDislikeConfirmation" = "评论点踩确认";
+"FollowConfirmation" = "关注确认";
+"ShareConfirmation" = "分享确认";
+"ConfirmationMessage" = "你确定吗？";
+
+/* Region Options */
+"ChangeRegion" = "更改地区";
+"CurrentRegion" = "当前地区";
+"SelectRegion" = "选择地区";
+"AlwaysOpenInSafari" = "总是在Safari中打开";
+"ShowRegionInfo" = "显示地区信息";
+"ShowUploadTime" = "显示上传时间";
+"IPLocation" = "IP属地";
+"UploadTime" = "上传时间";
+
+/* Fake Options */
+"EnableFakeFeatures" = "启用伪造功能";
+"FakeVerified" = "伪造认证标识";
+"FakeFollowerCount" = "伪造粉丝数量";
+"FakeFollowingCount" = "伪造关注数量";
+"FakeUsername" = "伪造用户名";
+
+/* Appearance Options */
+"AccentColor" = "主题色";
+"DarkMode" = "深色模式";
+"CustomTheme" = "自定义主题";
+"FontSize" = "字体大小";
+
+/* Other Options */
+"AppLock" = "应用锁定";
+"BiometricAuth" = "生物识别验证";
+"PasscodeAuth" = "密码验证";
+"CleanCache" = "清理缓存";
+"ResetSettings" = "重置所有设置";
+"Language" = "语言";
+"About" = "关于";
+
+/* Copy Options */
+"CopyOptions" = "复制选项";
+"CopyDescription" = "复制描述";
+"CopyVideoLink" = "复制视频链接";
+"CopyMusicLink" = "复制音乐链接";
+
+/* Privacy Options */
+"HideOnlineStatus" = "隐藏在线状态";
+"HideReadReceipts" = "隐藏已读回执";
+"HideTypingIndicator" = "隐藏正在输入指示器";
+"DisableAnalytics" = "禁用数据分析";
+
+/* Pop-ups And Other Stuff */
+"OK" = "确定";
+"Cancel" = "取消";
+"Done" = "完成";
+"Save" = "保存";
+"Delete" = "删除";
+"Edit" = "编辑";
+"Yes" = "是";
+"No" = "否";
+"Enable" = "启用";
+"Disable" = "禁用";
+"Download" = "下载";
+"Share" = "分享";
+"Copy" = "复制";
+"Copied" = "已复制";
+"Success" = "成功";
+"Error" = "错误";
+"Warning" = "警告";
+"Info" = "信息";
+"Loading" = "加载中";
+"Please Wait" = "请稍候";
+"Downloading" = "下载中";
+"Downloaded" = "已下载";
+"Failed" = "失败";
+"Retry" = "重试";
+"Skip" = "跳过";
+"Next" = "下一个";
+"Previous" = "上一个";
+"Close" = "关闭";
+"Open" = "打开";
+"Settings" = "设置";
+"Version" = "版本";
+"Build" = "构建";
+"Device" = "设备";
+"iOS Version" = "iOS版本";
+"Language" = "语言";
+"Reset Confirmation" = "你确定要重置所有设置吗？此操作无法撤销。";
+"Cache Cleared" = "缓存已成功清理。";
+"Settings Reset" = "所有设置已重置为默认值。";
+"Authentication Required" = "需要身份验证";
+"Please authenticate to continue" = "请验证身份以继续";
+"Authentication Failed" = "身份验证失败";
+"Please try again" = "请重试";

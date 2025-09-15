@@ -1,0 +1,148 @@
+/* Headers */
+"Settings" = "Settings";
+"Developer" = "BHTikTok Unified Developer";
+"PlusDeveloper" = "BHTikTok Unified Team";
+
+/* Main */
+"DownloadOptions" = "Downloads";
+"FeedOptions" = "Feed";
+"ProfileOptions" = "Profile";
+"ConfirmationOptions" = "Confirmation";
+"RegionOptions" = "Region";
+"FakeOptions" = "Fake";
+"ColorOptions" = "Appearance";
+"OtherOptions" = "Other";
+"Apply" = "Apply";
+"SettingsDescription" = "Configure BHTikTok Unified features";
+
+/* Developer */
+"TipJar" = "Tip Jar";
+"DonateViaPayPal" = "Donate via PayPal";
+"Donate" = "Support the development";
+"Telegram" = "Our Telegram Channel";
+"Thanks" = "Special Thanks";
+"DonateMessage" = "If you like BHTikTok Unified and want to support me, you can buy me a coffee using any of the ways below.\n\nThank you ❤️";
+"MaybeLater" = "Maybe Later";
+
+/* Download Options */
+"DownloadVideos" = "Download Videos";
+"DownloadMusics" = "Download Musics";
+"DownloadHDVideos" = "Download HD Videos";
+"DownloadWithoutWatermark" = "Download Without Watermark";
+"SaveToPhotos" = "Save to Photos";
+"SaveToFiles" = "Save to Files";
+"DownloadLocation" = "Download Location";
+
+/* Feed Options */
+"HideAds" = "Hide Ads";
+"ShowProgressBar" = "Show Progress Bar";
+"AutoPlayNextVideo" = "Auto Play Next Video";
+"HideUIElements" = "Hide UI Elements";
+"HideTabBarLabels" = "Hide Tab Bar Labels";
+"HideSearchBar" = "Hide Search Bar";
+"CustomFeedLayout" = "Custom Feed Layout";
+
+/* Profile Options */
+"SaveProfileImage" = "Save Profile Image";
+"CopyProfileInfo" = "Copy Profile Information";
+"ExtendedBio" = "Extended Bio";
+"ExtendedComment" = "Extended Comment";
+"CopyUsername" = "Copy Username";
+"CopyBio" = "Copy Bio";
+"SaveProfileImageMessage" = "Do you want to save this profile image?";
+
+/* Confirmation Options */
+"LikeConfirmation" = "Like Confirmation";
+"CommentLikeConfirmation" = "Comment Like Confirmation";
+"CommentDislikeConfirmation" = "Comment Dislike Confirmation";
+"FollowConfirmation" = "Follow Confirmation";
+"ShareConfirmation" = "Share Confirmation";
+"ConfirmationMessage" = "Are you sure?";
+
+/* Region Options */
+"ChangeRegion" = "Change Region";
+"CurrentRegion" = "Current Region";
+"SelectRegion" = "Select Region";
+"AlwaysOpenInSafari" = "Always Open in Safari";
+"ShowRegionInfo" = "Show Region Info";
+"ShowUploadTime" = "Show Upload Time";
+"IPLocation" = "IP Location";
+"UploadTime" = "Upload Time";
+
+/* Fake Options */
+"EnableFakeFeatures" = "Enable Fake Features";
+"FakeVerified" = "Fake Verified Badge";
+"FakeFollowerCount" = "Fake Follower Count";
+"FakeFollowingCount" = "Fake Following Count";
+"FakeUsername" = "Fake Username";
+
+/* Appearance Options */
+"AccentColor" = "Accent Color";
+"DarkMode" = "Dark Mode";
+"CustomTheme" = "Custom Theme";
+"FontSize" = "Font Size";
+
+/* Other Options */
+"AppLock" = "App Lock";
+"BiometricAuth" = "Biometric Authentication";
+"PasscodeAuth" = "Passcode Authentication";
+"CleanCache" = "Clean Cache";
+"ResetSettings" = "Reset All Settings";
+"Language" = "Language";
+"About" = "About";
+
+/* Copy Options */
+"CopyOptions" = "Copy Options";
+"CopyDescription" = "Copy Description";
+"CopyVideoLink" = "Copy Video Link";
+"CopyMusicLink" = "Copy Music Link";
+
+/* Privacy Options */
+"HideOnlineStatus" = "Hide Online Status";
+"HideReadReceipts" = "Hide Read Receipts";
+"HideTypingIndicator" = "Hide Typing Indicator";
+"DisableAnalytics" = "Disable Analytics";
+
+/* Pop-ups And Other Stuff */
+"OK" = "OK";
+"Cancel" = "Cancel";
+"Done" = "Done";
+"Save" = "Save";
+"Delete" = "Delete";
+"Edit" = "Edit";
+"Yes" = "Yes";
+"No" = "No";
+"Enable" = "Enable";
+"Disable" = "Disable";
+"Download" = "Download";
+"Share" = "Share";
+"Copy" = "Copy";
+"Copied" = "Copied";
+"Success" = "Success";
+"Error" = "Error";
+"Warning" = "Warning";
+"Info" = "Info";
+"Loading" = "Loading";
+"Please Wait" = "Please Wait";
+"Downloading" = "Downloading";
+"Downloaded" = "Downloaded";
+"Failed" = "Failed";
+"Retry" = "Retry";
+"Skip" = "Skip";
+"Next" = "Next";
+"Previous" = "Previous";
+"Close" = "Close";
+"Open" = "Open";
+"Settings" = "Settings";
+"Version" = "Version";
+"Build" = "Build";
+"Device" = "Device";
+"iOS Version" = "iOS Version";
+"Language" = "Language";
+"Reset Confirmation" = "Are you sure you want to reset all settings? This action cannot be undone.";
+"Cache Cleared" = "Cache has been cleared successfully.";
+"Settings Reset" = "All settings have been reset to default values.";
+"Authentication Required" = "Authentication Required";
+"Please authenticate to continue" = "Please authenticate to continue";
+"Authentication Failed" = "Authentication Failed";
+"Please try again" = "Please try again";

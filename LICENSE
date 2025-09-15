@@ -1,0 +1,59 @@
+MIT License
+
+Copyright (c) 2024 BHTikTok Unified Team
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---
+
+## 第三方许可证 | Third-party Licenses
+
+### JGProgressHUD
+Copyright (c) 2014-2018 Jonas Gessner
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+### 原始项目致谢 | Original Project Acknowledgments
+
+本项目整合了以下开源项目的代码和思想：
+This project integrates code and ideas from the following open source projects:
+
+- **BHTiktok** by [@hahios-2506](https://github.com/hahios-2506): 原始功能实现 | Original functionality implementation
+  - 项目地址 | Project URL: https://github.com/hahios-2506/BHTiktok
+- **BHTikTok-Plus** by [@dayanch96](https://github.com/dayanch96): 多语言支持和文档 | Multi-language support and documentation
+  - 项目地址 | Project URL: https://github.com/dayanch96/BHTikTok-Plus
+
+我们感谢原始开发者 @hahios-2506 和 @dayanch96 的杰出贡献，并遵循开源精神继续改进这个项目。
+We appreciate the outstanding contributions of the original developers @hahios-2506 and @dayanch96, and continue to improve this project in the spirit of open source.

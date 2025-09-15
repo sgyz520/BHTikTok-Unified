@@ -1,0 +1,26 @@
+# 强制所有文本文件使用Unix换行符
+* text=auto eol=lf
+
+# 确保特定文件类型使用Unix换行符
+*.mk text eol=lf
+*.m text eol=lf
+*.h text eol=lf
+*.x text eol=lf
+*.plist text eol=lf
+*.control text eol=lf
+Makefile text eol=lf
+
+# 确保二进制文件不会被修改
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.mov binary
+*.mp4 binary
+*.mp3 binary
+*.wav binary
+*.zip binary
+*.tar binary
+*.gz binary
+*.bz2 binary

@@ -1,0 +1,476 @@
+name: Build and Release BHTikTok Unified
+
+on:
+  workflow_dispatch:
+    inputs:
+      bhtiktok_version:
+        description: "The version of BHTikTok Unified"
+        default: "25.9.10"
+        required: true
+        type: string
+      decrypted_tiktok_url:
+        description: "The direct URL to the decrypted TikTok ipa"
+        default: ""
+        required: false
+        type: string
+      tiktok_version:
+        description: "The version of TikTok"
+        default: ""
+        required: false
+        type: string
+      bundle_id:
+        description: "Modify the bundle ID. Not recommended"
+        default: "com.zhiliaoapp.musically"
+        required: false
+        type: string
+      app_name:
+        description: "Modify the name of the app on the Home Screen. Not recommended"
+        default: "TikTok"
+        required: false
+        type: string
+      create_release:
+        description: "Create a draft release"
+        default: true
+        required: false
+        type: boolean
+  push:
+    branches: [ main, develop ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ main ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DEVELOPER_DIR: /Applications/Xcode.app/Contents/Developer
+
+jobs:
+  build:
+    name: Build BHTikTok Unified
+    runs-on: macos-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout Main
+        uses: actions/checkout@v4
+        with:
+          path: main
+          submodules: recursive
+
+      - name: Install Dependencies
+        run: |
+          brew install ldid dpkg make subversion
+          echo "$(brew --prefix make)/libexec/gnubin" >> $GITHUB_PATH
+
+      - name: Setup Theos
+        uses: actions/checkout@v4
+        with:
+          repository: theos/theos
+          ref: master
+          path: theos
+          submodules: recursive
+
+      - name: Cache iOS SDK
+        id: SDK
+        uses: actions/cache@v4
+        env:
+          cache-name: iOS-15.5-SDK
+        with:
+          path: theos/sdks/
+          key: ${{ env.cache-name }}
+
+      - name: Download iOS 15.5 SDK
+        if: steps.SDK.outputs.cache-hit != 'true'
+        run: |
+          curl -L -o iPhoneOS15.5.sdk.tar.gz https://github.com/chrisharper22/sdks/archive/refs/heads/main.tar.gz
+          tar -xzf iPhoneOS15.5.sdk.tar.gz
+          mv sdks-main/iPhoneOS15.5.sdk $THEOS/sdks/
+          rm -rf sdks-main iPhoneOS15.5.sdk.tar.gz
+        env:
+          THEOS: ${{ github.workspace }}/theos
+
+      - name: Setup Theos Jailed
+        uses: actions/checkout@v4
+        with:
+          repository: qnblackcat/theos-jailed
+          ref: master
+          path: theos-jailed
+          submodules: recursive
+
+      - name: Install Theos Jailed
+        run: |
+          ./theos-jailed/install
+        env:
+          THEOS: ${{ github.workspace }}/theos
+
+      - name: Create Missing Directories and Files
+        run: |
+          cd ${{ github.workspace }}/main
+          
+          # 创建库目录
+          mkdir -p 库/JGProgressHUD
+          
+          # 下载MBProgressHUD源码（包含JGProgressHUD）
+          curl -L -o MBProgressHUD.tar.gz https://github.com/jdg/MBProgressHUD/archive/refs/heads/master.tar.gz
+          tar -xzf MBProgressHUD.tar.gz
+          
+          # 查找JGProgressHUD文件并复制
+          find MBProgressHUD-master -name "JGProgressHUD*" -type f -exec cp {} 库/JGProgressHUD/ \;
+          
+          # 清理临时文件
+          rm -rf MBProgressHUD-master MBProgressHUD.tar.gz
+          
+          # 检查是否成功复制了文件
+          if [ ! -f "库/JGProgressHUD/JGProgressHUD.h" ]; then
+            echo "JGProgressHUD.h not found, creating placeholder files"
+            # 创建占位符文件
+            echo '#import <UIKit/UIKit.h>' > 库/JGProgressHUD/JGProgressHUD.h
+            echo '#import "JGProgressHUD.h"' > 库/JGProgressHUD/JGProgressHUD.m
+            echo '@interface JGProgressHUD : UIView @end' >> 库/JGProgressHUD/JGProgressHUD.h
+            echo '@implementation JGProgressHUD @end' >> 库/JGProgressHUD/JGProgressHUD.m
+          fi
+          
+          # 创建Core目录中的缺失文件
+          echo '#import <Foundation/Foundation.h>
+          #import <UIKit/UIKit.h>
+          
+          NS_ASSUME_NONNULL_BEGIN
+          
+          @protocol BHDownloadDelegate <NSObject>
+          @optional
+          - (void)downloadDidFinish:(NSString *)filePath;
+          - (void)downloadDidFailWithError:(NSError *)error;
+          - (void)downloadProgress:(float)progress;
+          @end
+          
+          @interface BHDownload : NSObject <NSURLSessionDownloadDelegate>
+          
+          @property (nonatomic, weak) id<BHDownloadDelegate> delegate;
+          @property (nonatomic, strong) NSURLSession *session;
+          @property (nonatomic, strong) NSURLSessionDownloadTask *downloadTask;
+          
+          + (instancetype)sharedManager;
+          - (void)downloadFileWithURL:(NSString *)urlString;
+          - (void)cancelDownload;
+          
+          @end
+          
+          NS_ASSUME_NONNULL_END' > Core/BHDownload.h
+          
+          echo '#import "BHDownload.h"
+          
+          @interface BHDownload ()
+          
+          @property (nonatomic, strong) NSData *resumeData;
+          
+          @end
+          
+          @implementation BHDownload
+          
+          + (instancetype)sharedManager {
+              static BHDownload *sharedManager = nil;
+              static dispatch_once_t onceToken;
+              dispatch_once(&onceToken, ^{
+                  sharedManager = [[BHDownload alloc] init];
+              });
+              return sharedManager;
+          }
+          
+          - (instancetype)init {
+              self = [super init];
+              if (self) {
+                  NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+                  self.session = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
+              }
+              return self;
+          }
+          
+          - (void)downloadFileWithURL:(NSString *)urlString {
+              NSURL *url = [NSURL URLWithString:urlString];
+              if (!url) {
+                  NSError *error = [NSError errorWithDomain:@"BHDownloadError" code:1001 userInfo:@{NSLocalizedDescriptionKey: @"Invalid URL"}];
+                  [self.delegate downloadDidFailWithError:error];
+                  return;
+              }
+              
+              self.downloadTask = [self.session downloadTaskWithURL:url];
+              [self.downloadTask resume];
+          }
+          
+          - (void)cancelDownload {
+              [self.downloadTask cancelByProducingResumeData:^(NSData * _Nullable resumeData) {
+                  self.resumeData = resumeData;
+              }];
+          }
+          
+          #pragma mark - NSURLSessionDownloadDelegate
+          
+          - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location {
+              NSString *fileName = [downloadTask.originalRequest.URL lastPathComponent];
+              NSURL *documentsURL = [[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask][0];
+              NSURL *destinationURL = [documentsURL URLByAppendingPathComponent:fileName];
+              
+              NSError *error = nil;
+              [[NSFileManager defaultManager] moveItemAtURL:location toURL:destinationURL error:&error];
+              
+              if (error) {
+                  [self.delegate downloadDidFailWithError:error];
+              } else {
+                  [self.delegate downloadDidFinish:destinationURL.path];
+              }
+          }
+          
+          - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didWriteData:(int64_t)bytesWritten totalBytesWritten:(int64_t)totalBytesWritten totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite {
+              float progress = (float)totalBytesWritten / (float)totalBytesExpectedToWrite;
+              [self.delegate downloadProgress:progress];
+          }
+          
+          - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error {
+              if (error) {
+                  [self.delegate downloadDidFailWithError:error];
+              }
+          }
+          
+          @end' > Core/BHDownload.m
+          
+          echo '#import <Foundation/Foundation.h>
+          
+          NS_ASSUME_NONNULL_BEGIN
+          
+          @protocol BHMultipleDownloadDelegate <NSObject>
+          @optional
+          - (void)multipleDownloadDidFinish:(NSArray *)filePaths;
+          - (void)multipleDownloadDidFailWithError:(NSError *)error;
+          - (void)multipleDownloadProgress:(float)totalProgress individualProgress:(NSDictionary *)individualProgress;
+          @end
+          
+          @interface BHMultipleDownload : NSObject <NSURLSessionDownloadDelegate>
+          
+          @property (nonatomic, weak) id<BHMultipleDownloadDelegate> delegate;
+          @property (nonatomic, strong) NSURLSession *session;
+          @property (nonatomic, strong) NSMutableDictionary *downloadTasks;
+          @property (nonatomic, strong) NSMutableDictionary *progress;
+          @property (nonatomic, assign) NSUInteger completedTasks;
+          @property (nonatomic, assign) NSUInteger totalTasks;
+          
+          + (instancetype)sharedManager;
+          - (void)downloadFiles:(NSArray *)urlStrings;
+          - (void)cancelAllDownloads;
+          
+          @end
+          
+          NS_ASSUME_NONNULL_END' > Core/BHMultipleDownload.h
+          
+          echo '#import "BHMultipleDownload.h"
+          
+          @interface BHMultipleDownload ()
+          
+          @property (nonatomic, strong) NSMutableDictionary *resumeData;
+          
+          @end
+          
+          @implementation BHMultipleDownload
+          
+          + (instancetype)sharedManager {
+              static BHMultipleDownload *sharedManager = nil;
+              static dispatch_once_t onceToken;
+              dispatch_once(&onceToken, ^{
+                  sharedManager = [[BHMultipleDownload alloc] init];
+              });
+              return sharedManager;
+          }
+          
+          - (instancetype)init {
+              self = [super init];
+              if (self) {
+                  NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+                  self.session = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
+                  self.downloadTasks = [NSMutableDictionary dictionary];
+                  self.progress = [NSMutableDictionary dictionary];
+                  self.completedTasks = 0;
+                  self.totalTasks = 0;
+              }
+              return self;
+          }
+          
+          - (void)downloadFiles:(NSArray *)urlStrings {
+              [self cancelAllDownloads];
+              
+              self.totalTasks = urlStrings.count;
+              self.completedTasks = 0;
+              [self.progress removeAllObjects];
+              
+              for (NSString *urlString in urlStrings) {
+                  NSURL *url = [NSURL URLWithString:urlString];
+                  if (url) {
+                      NSURLSessionDownloadTask *downloadTask = [self.session downloadTaskWithURL:url];
+                      NSString *taskIdentifier = [NSString stringWithFormat:@"%lu", (unsigned long)downloadTask.taskIdentifier];
+                      self.downloadTasks[taskIdentifier] = downloadTask;
+                      self.progress[taskIdentifier] = @(0.0);
+                      [downloadTask resume];
+                  }
+              }
+          }
+          
+          - (void)cancelAllDownloads {
+              for (NSURLSessionDownloadTask *task in [self.downloadTasks allValues]) {
+                  [task cancel];
+              }
+              [self.downloadTasks removeAllObjects];
+              [self.progress removeAllObjects];
+              self.completedTasks = 0;
+              self.totalTasks = 0;
+          }
+          
+          #pragma mark - NSURLSessionDownloadDelegate
+          
+          - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location {
+              NSString *fileName = [downloadTask.originalRequest.URL lastPathComponent];
+              NSURL *documentsURL = [[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask][0];
+              NSURL *destinationURL = [documentsURL URLByAppendingPathComponent:fileName];
+              
+              NSError *error = nil;
+              [[NSFileManager defaultManager] moveItemAtURL:location toURL:destinationURL error:&error];
+              
+              NSString *taskIdentifier = [NSString stringWithFormat:@"%lu", (unsigned long)downloadTask.taskIdentifier];
+              [self.downloadTasks removeObjectForKey:taskIdentifier];
+              
+              if (error) {
+                  [self.delegate multipleDownloadDidFailWithError:error];
+              } else {
+                  self.completedTasks++;
+                  if (self.completedTasks == self.totalTasks) {
+                      NSMutableArray *filePaths = [NSMutableArray array];
+                      for (NSString *taskID in [self.downloadTasks allKeys]) {
+                          NSURLSessionDownloadTask *task = self.downloadTasks[taskID];
+                          NSString *path = [documentsURL URLByAppendingPathComponent:[task.originalRequest.URL lastPathComponent]].path;
+                          [filePaths addObject:path];
+                      }
+                      [self.delegate multipleDownloadDidFinish:filePaths];
+                  }
+              }
+          }
+          
+          - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didWriteData:(int64_t)bytesWritten totalBytesWritten:(int64_t)totalBytesWritten totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite {
+              NSString *taskIdentifier = [NSString stringWithFormat:@"%lu", (unsigned long)downloadTask.taskIdentifier];
+              float progress = (float)totalBytesWritten / (float)totalBytesExpectedToWrite;
+              self.progress[taskIdentifier] = @(progress);
+              
+              float totalProgress = 0.0;
+              for (NSNumber *p in [self.progress allValues]) {
+                  totalProgress += [p floatValue];
+              }
+              totalProgress = totalProgress / self.totalTasks;
+              
+              [self.delegate multipleDownloadProgress:totalProgress individualProgress:[self.progress copy]];
+          }
+          
+          - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error {
+              if (error) {
+                  [self.delegate multipleDownloadDidFailWithError:error];
+              }
+          }
+          
+          @end' > Core/BHMultipleDownload.m
+
+
+
+      - name: Build Tweak Package
+        id: build_package
+        run: |
+          cd ${{ github.workspace }}/main
+          
+          # 更新版本信息
+          sed -i '' "s/Version: .*/Version: ${{ env.BHTIKTOK_VERSION }}/g" control
+          
+          # 构建包
+          make package FINALPACKAGE=1
+          
+          # 重命名包文件
+          PACKAGE_NAME="BHTikTokUnified_${{ env.BHTIKTOK_VERSION }}.deb"
+          mv "packages/$(ls -t packages | head -n1)" "packages/$PACKAGE_NAME"
+          
+          echo "package=$PACKAGE_NAME" >>$GITHUB_OUTPUT
+          echo -e "==> \033[1mSHASUM256: $(shasum -a 256 packages/*.deb | cut -f1 -d' ')\033[0m"
+          echo -e "==> \033[1mPackage: $PACKAGE_NAME\033[0m"
+        env:
+          THEOS: ${{ github.workspace }}/theos
+          BHTIKTOK_VERSION: ${{ inputs.bhtiktok_version || '25.9.10' }}
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: BHTikTokUnified_${{ inputs.bhtiktok_version || '25.9.10' }}
+          path: |
+            ${{ github.workspace }}/main/packages/*.deb
+          if-no-files-found: error
+
+      - name: Create Release
+        id: create_release
+        if: ${{ inputs.create_release == true || startsWith(github.ref, 'refs/tags/') }}
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ format('v{0}-({1})', inputs.bhtiktok_version || '25.9.10', github.run_number) }}
+          name: ${{ format('BHTikTok Unified v{0}', inputs.bhtiktok_version || '25.9.10') }}
+          body: |
+            ## 🎉 BHTikTok Unified Release
+            
+            ### 📱 版本信息 | Version Info
+            - **BHTikTok Unified**: v${{ inputs.bhtiktok_version || '25.9.10' }}
+            - **构建号 | Build**: #${{ github.run_number }}
+            - **提交 | Commit**: ${{ github.sha }}
+            
+            ### 🚀 新功能 | New Features
+            - 完整的功能实现与多语言支持
+            - 支持12种语言的本地化
+            - 现代化的设置界面
+            - 增强的下载功能
+            - 改进的安全性和隐私保护
+            
+            ### 📦 下载 | Downloads
+            - **DEB包**: 适用于越狱设备
+            
+            ### ⚠️ 注意事项 | Notes
+            - 需要iOS 14.0或更高版本
+            - DEB包需要越狱环境
+            
+            ### 🔗 相关链接 | Links
+            - [使用说明](https://github.com/${{ github.repository }}/blob/main/README.md)
+            - [问题反馈](https://github.com/${{ github.repository }}/issues)
+            - [Telegram频道](https://t.me/BHTikTokUnified)
+          files: |
+            main/packages/*.deb
+          draft: ${{ inputs.create_release == true }}
+          prerelease: ${{ contains(github.ref, 'beta') || contains(github.ref, 'alpha') }}
+
+  test:
+    name: Test Build
+    runs-on: macos-latest
+    if: github.event_name == 'pull_request'
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Install Dependencies
+        run: brew install ldid
+        
+      - name: Setup Theos
+        uses: actions/checkout@v4
+        with:
+          repository: theos/theos
+          ref: master
+          path: theos
+          
+      - name: Test Compilation
+        run: |
+          export THEOS=${{ github.workspace }}/theos
+          make clean
+          make
+        env:
+          THEOS: ${{ github.workspace }}/theos

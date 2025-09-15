@@ -1,0 +1,13 @@
+{
+    Filter = {
+        Bundles = (
+            "com.zhiliaoapp.musically",
+            "com.ss.iphone.ugc.Aweme"
+        );
+        Executables = (
+            "TikTok",
+            "musically",
+            "Aweme"
+        );
+    };
+}

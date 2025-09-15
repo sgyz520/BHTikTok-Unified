@@ -1,0 +1,7 @@
+#!/bin/bash
+# BHTikTok Unified Preference Bundle可执行文件
+# 实际功能由主插件提供
+# 此文件用于激活设置界面
+
+echo "BHTikTok Unified Settings Bundle"
+exit 0
