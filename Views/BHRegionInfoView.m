@@ -118,22 +118,7 @@
     }
     
     // 如果还是没有，尝试从其他属性获取
-    if (!uploadDate && [self.awemeModel respondsToSelector:@selector(createTimeStr)]) {
-        NSString *createTimeStr = [self.awemeModel createTimeStr];
-        if (createTimeStr && createTimeStr.length > 0) {
-            // 尝试解析字符串格式的日期
-            NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-            formatter.dateFormat = @"yyyy-MM-dd HH:mm:ss";
-            formatter.locale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
-            uploadDate = [formatter dateFromString:createTimeStr];
-            
-            if (!uploadDate) {
-                // 尝试其他格式
-                formatter.dateFormat = @"yyyy-MM-dd";
-                uploadDate = [formatter dateFromString:createTimeStr];
-            }
-        }
-    }
+    // 注意：createTimeStr方法在当前TikTok版本中可能不存在，跳过该检查
     
     // 如果仍然没有获取到时间，使用当前时间作为示例
     if (!uploadDate) {
