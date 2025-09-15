@@ -2,12 +2,17 @@
     Filter = {
         Bundles = (
             "com.zhiliaoapp.musically",
-            "com.ss.iphone.ugc.Aweme"
+            "com.ss.iphone.ugc.Aweme",
+            "com.bytedance.tiktok",
+            "musical.ly",
+            "TikTok"
         );
         Executables = (
             "TikTok",
             "musically",
-            "Aweme"
+            "Aweme",
+            "musical.ly",
+            "ByteDance"
         );
     };
 }
