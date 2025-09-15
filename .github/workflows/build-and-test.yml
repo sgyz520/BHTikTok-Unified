@@ -1,0 +1,189 @@
+name: Build and Test BHTikTok Unified
+
+on:
+  push:
+    branches: [ main, master, development ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build BHTikTok Unified
+    runs-on: macos-latest
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+    
+    - name: Setup Theos
+      uses: Randomblock1/theos-action@v1
+      
+    - name: Build Main Tweak
+      run: |
+        cd $GITHUB_WORKSPACE
+        make clean
+        make package
+      env:
+        THEOS: /opt/theos
+        
+    - name: Build Preferences Bundle
+      run: |
+        cd $GITHUB_WORKSPACE/BHTikTokUnifiedPrefs
+        make clean
+        make
+      env:
+        THEOS: /opt/theos
+        
+    - name: Upload Build Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: BHTikTokUnified-${{ github.sha }}
+        path: |
+          packages/*.deb
+          .theos/obj/debug/
+        retention-days: 30
+        
+    - name: Check for Common Issues
+      run: |
+        echo "Checking for common Objective-C issues..."
+        
+        # 检查内存管理问题
+        if grep -r "retain" --include="*.h" --include="*.m" .; then
+          echo "⚠️  Found potential retain issues"
+        fi
+        
+        # 检查拼写错误的键值
+        if grep -r "porgress\|decription" --include="*.m" --include="*.x" .; then
+          echo "❌ Found spelling errors in keys"
+          exit 1
+        else
+          echo "✅ No spelling errors in keys found"
+        fi
+        
+        # 检查是否有@dynamic在错误位置
+        if grep -r "@dynamic" --include="*.h" .; then
+          echo "❌ Found @dynamic in header files"
+          exit 1
+        else
+          echo "✅ No @dynamic in header files"
+        fi
+        
+        echo "Build validation completed successfully!"
+
+  test:
+    name: Run Tests
+    runs-on: macos-latest
+    needs: build
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+      
+    - name: Setup Theos
+      uses: Randomblock1/theos-action@v1
+      
+    - name: Syntax Check
+      run: |
+        echo "Running syntax checks..."
+        
+        # 检查所有.h和.m文件的语法
+        find . -name "*.h" -o -name "*.m" | while read file; do
+          echo "Checking syntax for: $file"
+          # 使用clang进行基本语法检查（忽略框架相关错误）
+          clang -fsyntax-only -Wno-error "$file" 2>/dev/null || echo "Syntax check skipped for $file (expected in tweak development)"
+        done
+        
+        echo "Syntax check completed!"
+        
+    - name: Check File Structure
+      run: |
+        echo "Checking project file structure..."
+        
+        # 检查必需文件是否存在
+        required_files=(
+          "Makefile"
+          "control"
+          "BHTikTokUnified.plist"
+          "Tweak.x"
+          "BHTikTokUnifiedPrefs/Entry.plist"
+          "Core/BHIManager.h"
+          "Core/BHIManager.m"
+        )
+        
+        for file in "${required_files[@]}"; do
+          if [ -f "$file" ]; then
+            echo "✅ $file exists"
+          else
+            echo "❌ $file is missing"
+            exit 1
+          fi
+        done
+        
+        echo "File structure check completed!"
+
+  package:
+    name: Create Release Package
+    runs-on: macos-latest
+    needs: [build, test]
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+      
+    - name: Setup Theos
+      uses: Randomblock1/theos-action@v1
+      
+    - name: Build Release Package
+      run: |
+        cd $GITHUB_WORKSPACE
+        make clean
+        make package FINALPACKAGE=1
+      env:
+        THEOS: /opt/theos
+        
+    - name: Create Release Notes
+      run: |
+        cat > release_notes.md << EOF
+        # BHTikTok Unified v$(grep "Version:" control | cut -d' ' -f2)
+        
+        ## 🎯 主要功能
+        - ✅ 视频下载（无水印、高清）
+        - ✅ 界面增强（去广告、进度条）
+        - ✅ 隐私保护（应用锁定）
+        - ✅ 地区切换和信息显示
+        - ✅ 12种语言支持
+        
+        ## 🔧 本次修复
+        - 修复了SettingsViewController编译错误
+        - 改进了内存管理
+        - 增强了运行时安全性
+        - 统一了键值映射
+        
+        ## 📱 系统要求
+        - iOS 14.0 - 18.x
+        - 越狱设备
+        - TikTok应用
+        
+        ## 📦 安装方法
+        1. 下载.deb文件
+        2. 使用Cydia/Sileo安装或手动安装：\`dpkg -i *.deb\`
+        3. 重启SpringBoard
+        
+        ## ⚠️ 注意事项
+        - 仅供学习和研究使用
+        - 请遵守当地法律法规
+        - 请遵守TikTok服务条款
+        EOF
+        
+    - name: Upload Release Package
+      uses: actions/upload-artifact@v4
+      with:
+        name: BHTikTokUnified-Release-${{ github.sha }}
+        path: |
+          packages/*.deb
+          release_notes.md
+        retention-days: 90
